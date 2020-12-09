@@ -1,0 +1,108 @@
+package com.mygdx.gamepb6.input;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.mygdx.gamepb6.net.packets.Packet02Move;
+
+public class HandleInput {
+	private Body body;
+	private int posX;
+	private int posY;
+	private boolean enableSkill;
+	
+	public HandleInput(Body body) {
+		this.body = body;
+		this.posX=0;
+		this.posY=0;
+		this.enableSkill=false;
+		update();
+	}
+	
+	public boolean up() {
+		return Gdx.input.isKeyPressed(Input.Keys.UP);
+	}
+	
+	public boolean down() {
+		return  Gdx.input.isKeyPressed(Input.Keys.DOWN);
+	}
+	
+	public boolean left() {
+		return Gdx.input.isKeyPressed(Input.Keys.LEFT);
+	}
+	
+	public boolean right() {
+		return Gdx.input.isKeyPressed(Input.Keys.RIGHT);
+	}
+	
+	public boolean still() {
+		return !Gdx.input.isKeyPressed(Input.Keys.ANY_KEY);
+	}
+	public boolean skillKey() {
+		return Gdx.input.isKeyJustPressed(Input.Keys.SPACE);
+	}
+	
+	
+	public void update() {
+		if(up()) {
+			this.body.setLinearVelocity(0f, 0.5f);
+			setPos(0, 1);
+		}
+		
+		if(right()) {
+			this.body.setLinearVelocity(0.5f, 0f);
+			setPos(1, 0);
+		}
+        
+		if(left()) {
+			this.body.setLinearVelocity(-0.5f, 0f);
+			setPos(-1, 0);
+		}
+        
+		if(down()) {
+			this.body.setLinearVelocity(0f, -0.5f);
+			setPos(0, -1);
+		}
+       
+        if(still()) {
+        	this.body.setLinearVelocity(0f, 0f);
+        	setPos(0, 0);
+        }
+        
+        
+        if(skillKey() && enableSkill == true) {
+        	System.out.println("Skill attivata");
+        	//skills(randomNumber());
+        }
+        
+	}
+	
+	
+	
+	public void setPos(int posX, int posY) {
+		setPosX(posX);
+		setPosY(posY);
+	}
+	
+	
+	public int getPosX() {
+		return posX;
+	}
+
+	
+	public void setPosX(int posX) {
+		this.posX = posX;
+	}
+
+
+
+	public int getPosY() {
+		return posY;
+	}
+
+	public void setPosY(int posY) {
+		this.posY = posY;
+	}
+	
+
+}

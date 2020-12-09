@@ -24,6 +24,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.gamepb6.MainGame;
 import com.mygdx.gamepb6.graphics.GraphicsPB;
+import com.mygdx.gamepb6.input.HandleInput;
 import com.mygdx.gamepb6.net.packets.Packet02Move;
 import com.mygdx.gamepb6.net.packets.Packet03Bullet;
 import com.mygdx.gamepb6.net.packets.Packet04LifeSkill;
@@ -71,6 +72,7 @@ public class Entity extends Sprite {
 	private Packet04LifeSkill packetLS;
 	public Gun gun;
 	public AnimationsPB animations;
+	public HandleInput input;
     
 	
 	public Entity(PlayScreen screen){
@@ -86,6 +88,7 @@ public class Entity extends Sprite {
     	this.gun= new Gun(this.screen.getHud());
     	this.animations = new AnimationsPB();
     	
+    	
     	this.xOffset = posX - modifier / 2;
     	this.yOffset = posY - modifier / 2 - 4;
     	
@@ -94,6 +97,8 @@ public class Entity extends Sprite {
         currentState = State.STANDING;
         previousState = State.STANDING;
         defineplayer();
+        this.input = new HandleInput(this.b2body);
+        
         setBounds(0, 0, 16 / MainGame.PPM, 16 / MainGame.PPM);
        
         setRegion(animations.getPlayerStand());
@@ -124,6 +129,7 @@ public class Entity extends Sprite {
             		
             	else if((b2body.getLinearVelocity().y < 0))
             		region = animations.getAnimationDown(stateTimer);
+            	
             	else
             		region = animations.getPlayerStand();
                 break;
@@ -143,7 +149,7 @@ public class Entity extends Sprite {
     public void handleInput(float dt){
     	if(this.currentState != State.DEAD) {
     		
-	        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+	        /*if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
 	        	this.b2body.setLinearVelocity(0f, 0.5f);
 	        	posX=0;
 	        	posY=1;
@@ -171,14 +177,17 @@ public class Entity extends Sprite {
             	posX=0;
 	        	posY=0;
             }
-	        
+	        */
+    		
 	        if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && enableSkill == true) {
             	skills(randomNumber());
             }
-	        
-            
+	        /*
 	        packet = new Packet02Move( this.username, posX, posY, this.b2body.getPosition().x, this.b2body.getPosition().y);
-	        this.screen.game.socketClient.sendData(packet.getData());	        	
+	        this.screen.game.socketClient.sendData(packet.getData());*/
+
+    		input.update();
+    		sendPacket02Move();
     	}
     }
     
@@ -303,6 +312,12 @@ public class Entity extends Sprite {
     	packetLS = new Packet04LifeSkill(this.getUsername(), code);
     	this.screen.game.socketClient.sendData(packetLS.getData());
     }
+    
+    public void sendPacket02Move() {
+    	Packet02Move packet = new Packet02Move( this.username, input.getPosX(), input.getPosY(), 
+    			getbX(this), getbY(this));
+        this.screen.game.socketClient.sendData(packet.getData());
+    }
 
 
 	public void moreLife() {
@@ -315,6 +330,7 @@ public class Entity extends Sprite {
     	this.screen.getHud().setLife(this.life);
     	sendPacket04LifeSkill(this.life);
     }
+    
     
     
     
