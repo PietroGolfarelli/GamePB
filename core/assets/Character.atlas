@@ -1,0 +1,97 @@
+
+Character.png
+size: 256,32
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+Down
+  rotate: false
+  xy: 20, 2
+  size: 17, 16
+  orig: 17, 16
+  offset: 0, 0
+  index: 1
+Down
+  rotate: false
+  xy: 38, 2
+  size: 17, 16
+  orig: 17, 16
+  offset: 0, 0
+  index: 3
+Down
+  rotate: false
+  xy: 92, 2
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: 2
+Standings
+  rotate: false
+  xy: 92, 2
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+Left
+  rotate: false
+  xy: 1, 2
+  size: 18, 16
+  orig: 18, 16
+  offset: 0, 0
+  index: 1
+Left
+  rotate: false
+  xy: 109, 1
+  size: 16, 17
+  orig: 16, 17
+  offset: 0, 0
+  index: 2
+Left
+  rotate: false
+  xy: 126, 1
+  size: 16, 17
+  orig: 16, 17
+  offset: 0, 0
+  index: 3
+Right
+  rotate: false
+  xy: 56, 2
+  size: 17, 16
+  orig: 17, 16
+  offset: 0, 0
+  index: 1
+Right
+  rotate: false
+  xy: 143, 2
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: 2
+Right
+  rotate: false
+  xy: 160, 2
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: 3
+Up
+  rotate: false
+  xy: 74, 2
+  size: 17, 16
+  orig: 17, 16
+  offset: 0, 0
+  index: 1
+Up
+  rotate: false
+  xy: 177, 2
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: 2
+Up
+  rotate: false
+  xy: 194, 2
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: 3
