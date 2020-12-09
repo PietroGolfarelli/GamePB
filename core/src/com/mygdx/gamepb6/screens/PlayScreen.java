@@ -78,7 +78,7 @@ public class PlayScreen implements Screen{
 	
 
     public PlayScreen(MainGame game, String p_username){
-    	
+    	//aggiungo commento per git DAICHEVA
         atlasB = new TextureAtlas("textures.atlas");
         atlas = new TextureAtlas("Character.atlas");
         this.game = game;
