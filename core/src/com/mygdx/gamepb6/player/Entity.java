@@ -225,7 +225,6 @@ public class Entity extends Sprite {
             	skills(randomNumber());
             }
 	        
-
             
 	        packet = new Packet02Move( this.username, posX, posY, this.b2body.getPosition().x, this.b2body.getPosition().y);
 	        this.screen.game.socketClient.sendData(packet.getData());	        	
