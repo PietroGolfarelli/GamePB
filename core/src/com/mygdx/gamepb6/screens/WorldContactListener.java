@@ -28,14 +28,13 @@ public class WorldContactListener implements ContactListener {
 		Fixture fixA = contact.getFixtureA();
         Fixture fixB = contact.getFixtureB();
 
-        if(fixA.getUserData()=="OggettiDuri" || fixB.getUserData()=="OggettiDuri"){
+        /*if(fixA.getUserData()=="OggettiDuri" || fixB.getUserData()=="OggettiDuri"){
         	//System.out.println("Contact detected OggettiDuri");
-        } 
+        } */
         
         if(fixA.getUserData()=="Cassa1" && fixB.getUserData()=="Player" || 
         		fixA.getUserData()=="Player" && fixB.getUserData()=="Cassa1"){
         	if (cassa1 == true) {
-        		System.out.println("Contact detected Cassa1 contro Player");
         		this.screen.player.setEnableSkill(true);
         	}
         } 
@@ -43,7 +42,6 @@ public class WorldContactListener implements ContactListener {
         if(fixA.getUserData()=="Cassa2" && fixB.getUserData()=="Player" || 
         		fixA.getUserData()=="Player" && fixB.getUserData()=="Cassa2"){
         	if (cassa2 == true) {
-        		System.out.println("Contact detected Cassa2 contro Player");
         		this.screen.player.setEnableSkill(true);
         	}
         } 
@@ -51,7 +49,6 @@ public class WorldContactListener implements ContactListener {
         if(fixA.getUserData()=="Cassa3" && fixB.getUserData()=="Player" || 
         		fixA.getUserData()=="Player" && fixB.getUserData()=="Cassa3"){
         	if (cassa3 == true) {
-        		System.out.println("Contact detected Cassa3 contro Player");
         		this.screen.player.setEnableSkill(true);
         	}
         } 
@@ -59,7 +56,6 @@ public class WorldContactListener implements ContactListener {
         if(fixA.getUserData()=="Cassa4" && fixB.getUserData()=="Player" || 
         		fixA.getUserData()=="Player" && fixB.getUserData()=="Cassa4"){
         	if (cassa4 == true) {
-        		System.out.println("Contact detected Cassa4 contro Player");
         		this.screen.player.setEnableSkill(true);
         	}
         } 
@@ -67,7 +63,6 @@ public class WorldContactListener implements ContactListener {
         if(fixA.getUserData()=="Cassa5" && fixB.getUserData()=="Player" || 
         		fixA.getUserData()=="Player" && fixB.getUserData()=="Cassa5"){
         	if (cassa5 == true) {
-        		System.out.println("Contact detected Cassa5 contro Player");
         		this.screen.player.setEnableSkill(true);
         	} 
         } 
@@ -75,11 +70,7 @@ public class WorldContactListener implements ContactListener {
         if(fixA.getUserData()=="Bullet" && fixB.getUserData()=="Player" || 
         		fixA.getUserData()=="Player" && fixB.getUserData()=="Bullet"){
         	this.screen.player.colpito();
-        }
-        
-        //System.out.println("Contact detected a caso");
-        
-        
+        }  
        
 	}
 
