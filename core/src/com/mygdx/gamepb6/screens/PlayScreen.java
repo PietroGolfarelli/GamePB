@@ -79,8 +79,8 @@ public class PlayScreen implements Screen{
 
     public PlayScreen(MainGame game, String p_username){
     	
-        atlas = new TextureAtlas("Character.atlas");
         atlasB = new TextureAtlas("textures.atlas");
+        atlas = new TextureAtlas("Character.atlas");
         this.game = game;
         //create cam used to follow mario through cam world
         gamecam = new OrthographicCamera();
