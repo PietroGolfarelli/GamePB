@@ -277,6 +277,7 @@ public class PlayScreen implements Screen{
     	Bullet b = this.player.gun.shootBullet(this, this.player.getbX(player) , this.player.getbY(player), dirx, diry);
     	this.addBullet(b);
 		this.player.gun.removeOneBullet();
+		this.player.gun.updateHud();
 		
 		packetB = new Packet03Bullet(player.getUsername(), dirx, diry);
         this.game.socketClient.sendData(packetB.getData());

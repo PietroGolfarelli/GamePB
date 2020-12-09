@@ -39,7 +39,6 @@ public class Gun {
 			bullet = new SpeedBullet(screen, x, y , dirx, diry);
 		else if (normalBullet == true)
 			bullet = new NormalBullet(screen, x, y , dirx, diry);
-		
 		return bullet;
 	}
 	

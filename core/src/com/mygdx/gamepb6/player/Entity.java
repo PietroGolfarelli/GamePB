@@ -29,6 +29,7 @@ import com.mygdx.gamepb6.net.packets.Packet03Bullet;
 import com.mygdx.gamepb6.net.packets.Packet04LifeSkill;
 import com.mygdx.gamepb6.player.Entity.State;
 import com.mygdx.gamepb6.screens.PlayScreen;
+import com.mygdx.gamepb6.graphics.AnimationsPB;
 
 
 public class Entity extends Sprite {
@@ -42,20 +43,6 @@ public class Entity extends Sprite {
     public String username;
     
     public Packet02Move packet;
-    
-    private TextureRegion playerDead;
-    
-	private TextureRegion playerStand;
-	@SuppressWarnings("rawtypes")
-	private Animation playerRunLeft;
-    @SuppressWarnings("rawtypes")
-	private Animation playerRunRight;
-    @SuppressWarnings("rawtypes")
-	private Animation playerRunUp;
-    @SuppressWarnings("rawtypes")
-	private Animation playerRunDown;
-    
-    
     private float stateTimer;
     public World world;
     public Body b2body;
@@ -83,6 +70,7 @@ public class Entity extends Sprite {
 	private Random rnd;
 	private Packet04LifeSkill packetLS;
 	public Gun gun;
+	public AnimationsPB animations;
     
 	
 	public Entity(PlayScreen screen){
@@ -96,6 +84,7 @@ public class Entity extends Sprite {
     	this.life = 100;
     	this.enableSkill = false;
     	this.gun= new Gun(this.screen.getHud());
+    	this.animations = new AnimationsPB();
     	
     	this.xOffset = posX - modifier / 2;
     	this.yOffset = posY - modifier / 2 - 4;
@@ -106,44 +95,12 @@ public class Entity extends Sprite {
         previousState = State.STANDING;
         defineplayer();
         setBounds(0, 0, 16 / MainGame.PPM, 16 / MainGame.PPM);
-        
-        //set initial values for players location, width and height. And initial frame as playerStand.
-        
-        /*ANIMATIONS*/
-        Array<TextureRegion> frames = new Array<TextureRegion>();
-        
-        
-    	for(int i = 0; i < 3; i++)
-            frames.add(new TextureRegion(screen.getAtlas().findRegions("Left").get(i), i * 0, 0, 16, 16));
-        playerRunLeft = new Animation(0.2f, frames);
-        frames.clear();
-        
-        for(int i = 0; i < 3; i++)
-            frames.add(new TextureRegion(screen.getAtlas().findRegions("Right").get(i), 0, 0, 16, 16));
-        playerRunRight = new Animation(0.1f, frames);
-        frames.clear();
-        
-        for(int i = 0; i < 3; i++)
-            frames.add(new TextureRegion(screen.getAtlas().findRegions("Up").get(i), 0, 0, 16, 16));
-        playerRunUp = new Animation(0.1f, frames);
-        frames.clear();
-        
-        for(int i = 0; i < 3; i++)
-            frames.add(new TextureRegion(screen.getAtlas().findRegions("Down").get(i), 0, 0, 16, 16));
-        playerRunDown = new Animation(0.1f, frames);
-        frames.clear();
-        
-        //create texture region for player standing
-        playerStand = new TextureRegion(screen.getAtlas().findRegion("Standings"), 0, 0, 16, 16);
-        //create dead player texture region
-        playerDead = new TextureRegion(screen.getAtlas().findRegion("Standings"), 96, 0, 16, 16);
-        
-        setRegion(playerStand);
+       
+        setRegion(animations.getPlayerStand());
     }
 	
 	 public void update(float dt){ 
 	        setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
-	        //setRegion(getFrame());
 	        setRegion(getFrame(dt));
 	    }
 	    
@@ -153,38 +110,32 @@ public class Entity extends Sprite {
       
         switch(currentState){
             case DEAD:
-                region = playerDead;
+                region = animations.getPlayerDead();
                 break;
             case RUNNING:
-            	if((b2body.getLinearVelocity().x < 0) ){
-                    //region.flip(true, false);
-                    region = (TextureRegion) playerRunLeft.getKeyFrame(stateTimer, true);          
-                }
-            	else if((b2body.getLinearVelocity().x > 0)){
-                    //region.flip(true, false);
-                    region = (TextureRegion) playerRunRight.getKeyFrame(stateTimer, true);                  
-                }
-            	else if((b2body.getLinearVelocity().y > 0)){
-                    //region.flip(true, false);
-                    region = (TextureRegion) playerRunUp.getKeyFrame(stateTimer, true);     
-                }
-            	else if((b2body.getLinearVelocity().y < 0)){
-                    //region.flip(true, false);
-                    region = (TextureRegion) playerRunDown.getKeyFrame(stateTimer, true);     
-                }
-            	else {
-            		region = (TextureRegion) playerStand;
-            	}
+            	if((b2body.getLinearVelocity().x < 0) )
+                    region = animations.getAnimationLeft(stateTimer);
+            	
+            	else if((b2body.getLinearVelocity().x > 0))
+            		region = animations.getAnimationRight(stateTimer);
+            		
+            	else if((b2body.getLinearVelocity().y > 0))
+            		region = animations.getAnimationUp(stateTimer);
+            		
+            	else if((b2body.getLinearVelocity().y < 0))
+            		region = animations.getAnimationDown(stateTimer);
+            	else
+            		region = animations.getPlayerStand();
                 break;
+                
             case STANDING:
             default:
-                region = playerStand;
+                region = animations.getPlayerStand();
                 break;
         }
 
         stateTimer = currentState == previousState ? stateTimer + dt : 0;
         previousState = currentState;
-        //return our final adjusted frame
         return region;
     }
     
