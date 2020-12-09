@@ -67,7 +67,6 @@ public class Entity extends Sprite {
 	private int diry;
 	private Packet03Bullet packetB;
 	
-	public boolean enableSkill;
 	private Random rnd;
 	private Packet04LifeSkill packetLS;
 	public Gun gun;
@@ -84,7 +83,7 @@ public class Entity extends Sprite {
     	this.diry=5;
     	
     	this.life = 100;
-    	this.enableSkill = false;
+    	
     	this.gun= new Gun(this.screen.getHud());
     	this.animations = new AnimationsPB();
     	
@@ -92,12 +91,11 @@ public class Entity extends Sprite {
     	this.xOffset = posX - modifier / 2;
     	this.yOffset = posY - modifier / 2 - 4;
     	
-    	rnd = new Random();
-        
+        defineplayer();
+        this.input = new HandleInput(this);
+        rnd = new Random();
         currentState = State.STANDING;
         previousState = State.STANDING;
-        defineplayer();
-        this.input = new HandleInput(this.b2body);
         
         setBounds(0, 0, 16 / MainGame.PPM, 16 / MainGame.PPM);
        
@@ -148,44 +146,6 @@ public class Entity extends Sprite {
     
     public void handleInput(float dt){
     	if(this.currentState != State.DEAD) {
-    		
-	        /*if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-	        	this.b2body.setLinearVelocity(0f, 0.5f);
-	        	posX=0;
-	        	posY=1;
-	        }
-	        	
-	        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) { 
-	        	this.b2body.setLinearVelocity(0.5f, 0f);
-	        	posX=1;
-	        	posY=0;
-	        }
-	        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) { 
-	            this.b2body.setLinearVelocity(-0.5f, 0f);
-	            posX=-1;
-	        	posY=0;
-	            
-	        }
-	        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) { 
-	            this.b2body.setLinearVelocity(0f, -0.5f);
-	            posX=0;
-	        	posY=-1;
-	        }
-	        
-	        if(!Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)) {
-            	this.b2body.setLinearVelocity(0f, 0f);
-            	posX=0;
-	        	posY=0;
-            }
-	        */
-    		
-	        if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && enableSkill == true) {
-            	skills(randomNumber());
-            }
-	        /*
-	        packet = new Packet02Move( this.username, posX, posY, this.b2body.getPosition().x, this.b2body.getPosition().y);
-	        this.screen.game.socketClient.sendData(packet.getData());*/
-
     		input.update();
     		sendPacket02Move();
     	}
@@ -251,7 +211,6 @@ public class Entity extends Sprite {
 
         EdgeShape head = new EdgeShape();
         head.set(new Vector2(-2 / MainGame.PPM, 6 / MainGame.PPM), new Vector2(2 / MainGame.PPM, 6 / MainGame.PPM));
-        //fdef.filter.categoryBits = MainGame.player_HEAD_BIT;
         fdef.shape = head;
         fdef.isSensor = true;
         
@@ -259,13 +218,6 @@ public class Entity extends Sprite {
         
     }
     
-    public boolean isEnableSkill() {
-		return enableSkill;
-	}
-
-	public void setEnableSkill(boolean enableSkill) {
-		this.enableSkill = enableSkill;
-	}
 	
 	public int randomNumber() {
 		int max = 5;
@@ -303,7 +255,7 @@ public class Entity extends Sprite {
     		getHud().setMessaggio("SPEED-BULLET ACTIVATED");
     	}
     	
-    	setEnableSkill(false);
+    	input.setEnableSkill(false);
     	sendPacket04LifeSkill(skillType);
     }
     

@@ -4,21 +4,25 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.mygdx.gamepb6.net.packets.Packet02Move;
+import com.mygdx.gamepb6.player.Entity;
 
 public class HandleInput {
 	private Body body;
 	private int posX;
 	private int posY;
 	private boolean enableSkill;
+	private Entity player;
 	
-	public HandleInput(Body body) {
-		this.body = body;
+	public HandleInput(Entity entity) {
+		this.player = entity;
+		this.body = entity.b2body;
 		this.posX=0;
 		this.posY=0;
 		this.enableSkill=false;
 		update();
 	}
 	
+
 	public boolean up() {
 		return Gdx.input.isKeyPressed(Input.Keys.UP);
 	}
@@ -71,8 +75,7 @@ public class HandleInput {
         
         
         if(skillKey() && enableSkill == true) {
-        	System.out.println("Skill attivata");
-        	//skills(randomNumber());
+        	player.skills(player.randomNumber());
         }
         
 	}
@@ -102,6 +105,14 @@ public class HandleInput {
 
 	public void setPosY(int posY) {
 		this.posY = posY;
+	}
+	
+	public boolean isEnableSkill() {
+		return enableSkill;
+	}
+
+	public void setEnableSkill(boolean enableSkill) {
+		this.enableSkill = enableSkill;
 	}
 	
 

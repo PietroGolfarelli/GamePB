@@ -35,35 +35,35 @@ public class WorldContactListener implements ContactListener {
         if(fixA.getUserData()=="Cassa1" && fixB.getUserData()=="Player" || 
         		fixA.getUserData()=="Player" && fixB.getUserData()=="Cassa1"){
         	if (cassa1 == true) {
-        		this.screen.player.setEnableSkill(true);
+        		this.screen.player.input.setEnableSkill(true);
         	}
         } 
         
         if(fixA.getUserData()=="Cassa2" && fixB.getUserData()=="Player" || 
         		fixA.getUserData()=="Player" && fixB.getUserData()=="Cassa2"){
         	if (cassa2 == true) {
-        		this.screen.player.setEnableSkill(true);
+        		this.screen.player.input.setEnableSkill(true);
         	}
         } 
         
         if(fixA.getUserData()=="Cassa3" && fixB.getUserData()=="Player" || 
         		fixA.getUserData()=="Player" && fixB.getUserData()=="Cassa3"){
         	if (cassa3 == true) {
-        		this.screen.player.setEnableSkill(true);
+        		this.screen.player.input.setEnableSkill(true);
         	}
         } 
         
         if(fixA.getUserData()=="Cassa4" && fixB.getUserData()=="Player" || 
         		fixA.getUserData()=="Player" && fixB.getUserData()=="Cassa4"){
         	if (cassa4 == true) {
-        		this.screen.player.setEnableSkill(true);
+        		this.screen.player.input.setEnableSkill(true);
         	}
         } 
         
         if(fixA.getUserData()=="Cassa5" && fixB.getUserData()=="Player" || 
         		fixA.getUserData()=="Player" && fixB.getUserData()=="Cassa5"){
         	if (cassa5 == true) {
-        		this.screen.player.setEnableSkill(true);
+        		this.screen.player.input.setEnableSkill(true);
         	} 
         } 
         
@@ -81,33 +81,33 @@ public class WorldContactListener implements ContactListener {
         
 		if(fixA.getUserData()=="Cassa1" && fixB.getUserData()=="Player" || 
         		fixA.getUserData()=="Player" && fixB.getUserData()=="Cassa1"){
-        	this.screen.player.setEnableSkill(false);
+        	this.screen.player.input.setEnableSkill(false);
         	cassa1=false;
         }
 		
 		if(fixA.getUserData()=="Cassa2" && fixB.getUserData()=="Player" || 
         		fixA.getUserData()=="Player" && fixB.getUserData()=="Cassa2"){
         	
-        	this.screen.player.setEnableSkill(false);
+        	this.screen.player.input.setEnableSkill(false);
         	cassa2=false;
         }
 		
 		if(fixA.getUserData()=="Cassa3" && fixB.getUserData()=="Player" || 
         		fixA.getUserData()=="Player" && fixB.getUserData()=="Cassa3"){
         	
-        	this.screen.player.setEnableSkill(false);
+        	this.screen.player.input.setEnableSkill(false);
         	cassa3=false;
         }
 		
 		if(fixA.getUserData()=="Cassa4" && fixB.getUserData()=="Player" || 
         		fixA.getUserData()=="Player" && fixB.getUserData()=="Cassa4"){
-        	this.screen.player.setEnableSkill(false);
+        	this.screen.player.input.setEnableSkill(false);
         	cassa4=false;
         }
 		
 		if(fixA.getUserData()=="Cassa5" && fixB.getUserData()=="Player" || 
         		fixA.getUserData()=="Player" && fixB.getUserData()=="Cassa5"){
-        	this.screen.player.setEnableSkill(false);
+        	this.screen.player.input.setEnableSkill(false);
         	cassa5=false;
         }
 
