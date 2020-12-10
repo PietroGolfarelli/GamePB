@@ -30,6 +30,7 @@ import com.mygdx.gamepb6.net.packets.Packet03Bullet;
 import com.mygdx.gamepb6.net.packets.Packet04LifeSkill;
 import com.mygdx.gamepb6.player.Entity.State;
 import com.mygdx.gamepb6.screens.PlayScreen;
+import com.mygdx.gamepb6.skills.Skills;
 import com.mygdx.gamepb6.graphics.AnimationsPB;
 
 
@@ -72,13 +73,12 @@ public class Entity extends Sprite {
 	public Gun gun;
 	public AnimationsPB animations;
 	public HandleInput input;
+	public Skills skills;
     
 	
 	public Entity(PlayScreen screen){
         this.screen = screen;
         this.world = screen.getWorld();
-        this.posX=0;
-    	this.posY=0;
     	this.dirx=5;
     	this.diry=5;
     	
@@ -93,7 +93,8 @@ public class Entity extends Sprite {
     	
         defineplayer();
         this.input = new HandleInput(this);
-        rnd = new Random();
+        this.skills= new Skills(this);
+        
         currentState = State.STANDING;
         previousState = State.STANDING;
         
@@ -183,8 +184,7 @@ public class Entity extends Sprite {
         if (!isDead()) {
             playerIsDead = true;
             Filter filter = new Filter();
-            //filter.maskBits = MainGame.NOTHING_BIT;
-
+          
             for (Fixture fixture : b2body.getFixtureList()) {
                 fixture.setFilterData(filter);
             }
@@ -219,46 +219,14 @@ public class Entity extends Sprite {
     }
     
 	
-	public int randomNumber() {
-		int max = 5;
-		int min = 1;
-		
-		int r=(int) ((Math.random() * (max - min)) + min);
-		return -r;
-	}
-	
-	
 	public GraphicsPB getHud() {
 		return this.screen.getHud();
 	}
     
-    public void skills(int skillType) {
-    	if (skillType == -1) {
-    		moreLife();
-    		getHud().setMessaggio("LIFEPOINTS AUMENTATI");
-    		gun.updateHud();
-    	}
-    	
-    	if (skillType == -2) {
-    		gun.shootBigger();
-    		getHud().setMessaggio("BIG-BULLET ACTIVATED");
-    	}
-    	
-    	if (skillType == -3) {
-    		gun.setNumeroBullets(gun.getNumeroBullets() + 30);
-    		getHud().setMessaggio("RICARICA BULLET EFFETTUATA");
-    		gun.updateHud();
-    	}
-    	
-    	if (skillType == -4) {
-    		gun.shootFaster();
-    		getHud().setMessaggio("SPEED-BULLET ACTIVATED");
-    	}
-    	
-    	input.setEnableSkill(false);
-    	sendPacket04LifeSkill(skillType);
-    }
-    
+	
+	public void skills() {
+		skills.getSkill();
+	}
     
     public void sendPacket04LifeSkill(int code) {
     	packetLS = new Packet04LifeSkill(this.getUsername(), code);
@@ -283,11 +251,15 @@ public class Entity extends Sprite {
     	sendPacket04LifeSkill(this.life);
     }
     
-    
-    
-    
-    
-    public void draw(Batch batch){
+    public int getLife() {
+		return life;
+	}
+
+	public void setLife(int life) {
+		this.life = life;
+	}
+
+	public void draw(Batch batch){
         super.draw(batch);
         
     }

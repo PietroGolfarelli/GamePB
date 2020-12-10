@@ -40,7 +40,7 @@ public class HandleInput {
 	}
 	
 	public boolean still() {
-		return !Gdx.input.isKeyPressed(Input.Keys.ANY_KEY);
+		return (!Gdx.input.isKeyPressed(Input.Keys.ANY_KEY));
 	}
 	public boolean skillKey() {
 		return Gdx.input.isKeyJustPressed(Input.Keys.SPACE);
@@ -73,11 +73,9 @@ public class HandleInput {
         	setPos(0, 0);
         }
         
-        
         if(skillKey() && enableSkill == true) {
-        	player.skills(player.randomNumber());
+        	player.skills();
         }
-        
 	}
 	
 	
