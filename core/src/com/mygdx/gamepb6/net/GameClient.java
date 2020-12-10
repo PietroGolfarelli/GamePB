@@ -15,6 +15,7 @@ import com.mygdx.gamepb6.net.packets.Packet01Disconnect;
 import com.mygdx.gamepb6.net.packets.Packet02Move;
 import com.mygdx.gamepb6.net.packets.Packet03Bullet;
 import com.mygdx.gamepb6.net.packets.Packet04LifeSkill;
+import com.mygdx.gamepb6.net.packets.Packet05ServerAnswer;
 import com.mygdx.gamepb6.net.packets.Packet.PacketTypes;
 import com.mygdx.gamepb6.player.Nemico;
 
@@ -76,25 +77,31 @@ public class GameClient extends Thread {
             handleMove((Packet02Move) packet);
             break;
         case BULLET:
-        	
         	packet = new Packet03Bullet(data);
             handleBullet(((Packet03Bullet) packet));
             break;
         case LIFESKILL:
-        	System.out.println("pacchetto life arriva nel client " + game.playscreen.player.username);
         	packet = new Packet04LifeSkill(data);
             this.handleLifeSkill(((Packet04LifeSkill) packet));
-           
+            break;
+        case SERVERANSWER:
+        	System.out.println("pacchetto answe arriva nel client");
+        	packet = new Packet05ServerAnswer(data);
+            this.handleServerAnswer(((Packet05ServerAnswer) packet));
         }
     }
 
     
-	
+	private void handleServerAnswer(Packet05ServerAnswer packet05ServerAnswer) {
+		//this.game.setAnswer(true);
+		this.game.loadGame();
+	}
 
 
 	public void sendData(byte[] data) {
     	DatagramPacket packet = new DatagramPacket(data, data.length, ipAddress, 1331);
     	try {
+    		System.out.println("ip: "+ ipAddress + " porta: " + packet.getPort());
     		socket.send(packet);
             } 
     	catch (IOException e) {
@@ -125,7 +132,7 @@ public class GameClient extends Thread {
 	}
     
     private void handleLifeSkill(Packet04LifeSkill packet) {
-    	System.out.println("pacchetto life arriva in handlelife del client " + game.playscreen.player.username);
+    	System.out.println("pacchetto life arriva in handlelife del client " );
     	game.playscreen.nemicoLifeSkill(packet.getUsername(), packet.getCode());
 		
 	}

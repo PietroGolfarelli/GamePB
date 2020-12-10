@@ -27,33 +27,45 @@ public class MainGame extends Game implements Runnable {
     
     public Connessione conn;
     public GameClient socketClient;
-    public GameServer socketServer;
+    //public GameServer socketServer;
     
     public boolean isApplet = false;
     boolean running;
     boolean isServerRunning;
 	private String username;
+	private boolean answer;
+	private int timer;
     
 	
     @Override
     public void create() {
     	game=this;
     	batch = new SpriteBatch();
-    	this.username=JOptionPane.showInputDialog(this, "Please enter a username");
-    	playscreen= new PlayScreen(this, username);
-    	
-        running = true;
+    	running = true;
         
         thread = new Thread(this, NAME + "_main");
         thread.start();
         
-        //serverStart();
-        clientStart();
-    	setScreen(playscreen);
+        this.username=JOptionPane.showInputDialog(this, "Please enter a username");
+        playscreen= new PlayScreen(game, this.username);
+        answer = false;
+        timer= 50000;
+    	clientStart();
     	sendLogin();
+    	
 	}
     
-      
+    public void loadGame() {
+    	
+    	
+    	
+    	
+        
+        //serverStart();
+        //clientStart();
+    	setScreen(playscreen);
+    }
+    /*  
     public void serverStart() {
     	System.out.println("Accendo il server...");
         if (!isApplet) {
@@ -62,7 +74,7 @@ public class MainGame extends Game implements Runnable {
                 socketServer.start();
             }            
         }
-    }
+    }*/
     
     
     public void clientStart() {
@@ -72,7 +84,7 @@ public class MainGame extends Game implements Runnable {
     
     
     public void sendLogin() {
-    	Packet00Login loginPacket = new Packet00Login(playscreen.player.getUsername(), this.playscreen.player.getX(), 
+    	/*Packet00Login loginPacket = new Packet00Login(playscreen.player.getUsername(), this.playscreen.player.getX(), 
 				this.playscreen.player.getY());
 		if (socketServer != null) {
 			loginPacket.writeData(socketClient);
@@ -80,7 +92,41 @@ public class MainGame extends Game implements Runnable {
 		else {
 			System.out.println("ERRORE NEL LOGIN, SERVER SPENTO");
 			loginPacket.writeData(socketClient);
-		}
+		}*/
+    	
+
+    	Packet00Login loginPacket = new Packet00Login(this.username, 1, 1);
+    	
+		loginPacket.writeData(socketClient);		
+		//waitServerAnswer();
+    }
+    
+    public void setAnswer(boolean answer) {
+    	this.answer = answer;
+    }
+    
+    public boolean getAnswer() {
+    	return this.answer;
+    }
+    
+    public void waitServerAnswer() {
+    	while(this.answer != true) {
+    		//System.out.println("Client in attesa di una risposta");
+    		/*if (timer == 0) {
+    			System.out.println("timer a zero");
+    			break;
+    		}
+    		timer--;*/
+    	}
+    	
+    	if (getAnswer() == true) {
+    		System.out.println("Client ha ricevuto una risposta");
+    		loadGame();
+    	}
+    	else {
+    		System.out.println("Client non ha ricevuto una risposta");
+    	}
+ 
     }
 
     

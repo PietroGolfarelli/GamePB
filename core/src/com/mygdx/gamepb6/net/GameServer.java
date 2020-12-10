@@ -8,6 +8,7 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.badlogic.gdx.ApplicationListener;
 import com.mygdx.gamepb6.MainGame;
 import com.mygdx.gamepb6.net.packets.Packet;
 import com.mygdx.gamepb6.net.packets.Packet00Login;
@@ -15,200 +16,257 @@ import com.mygdx.gamepb6.net.packets.Packet01Disconnect;
 import com.mygdx.gamepb6.net.packets.Packet02Move;
 import com.mygdx.gamepb6.net.packets.Packet03Bullet;
 import com.mygdx.gamepb6.net.packets.Packet04LifeSkill;
+import com.mygdx.gamepb6.net.packets.Packet05ServerAnswer;
 import com.mygdx.gamepb6.net.packets.Packet.PacketTypes;
 
-public class GameServer extends Thread {
+public class GameServer extends Thread implements Runnable, ApplicationListener {
 
-    private DatagramSocket socket;
-    @SuppressWarnings("unused")
+	private DatagramSocket socket;
+	@SuppressWarnings("unused")
 	private MainGame game;
-    private List<Connessione> playerConnessi = new ArrayList<Connessione>();
-    public boolean running=false;
+	private List<Connessione> playerConnessi = new ArrayList<Connessione>();
+	public boolean running=false;
+	private Thread thread;
 
-    public GameServer(MainGame game) {
-        this.game = game;
-        setRunning(true);
-        try {
-            this.socket = new DatagramSocket(1331);
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    public boolean isRunning() {
+	public GameServer(/*MainGame game*/) {
+		//this.game = game;
+		/*thread = new Thread(this, "gianniServer");
+        thread.start();
+    	this.start();*/
+		setRunning(true);
+		try {
+			this.socket = new DatagramSocket(1331);
+		} catch (SocketException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public boolean isRunning() {
 		return running;
 	}
 
-    
+
 	public void setRunning(boolean running) {
 		this.running = running;
 	}
 
-	
-	public void run() {
-        while (true) {
-            byte[] data = new byte[1024];
-            DatagramPacket packet = new DatagramPacket(data, data.length);
-            try {
-                socket.receive(packet);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            this.parsePacket(packet.getData(), packet.getAddress(), packet.getPort());
-        }
-    }
 
-    private void parsePacket(byte[] data, InetAddress address, int port) {
-        String message = new String(data).trim();
-        PacketTypes type = Packet.lookupPacket(message.substring(0, 2));
-        Packet packet = null;
-        switch (type) {
-        default:
-        case INVALID:
-            break;
-        case LOGIN:
-            packet = new Packet00Login(data);
-            System.out.println("[" + address.getHostAddress() + ":" + port + "] "
-                    + ((Packet00Login) packet).getUsername() + " has connected...");
-            
-            Connessione conn = new Connessione(((Packet00Login) packet).getUsername(), address, port);
-            this.addConnection((Packet00Login) packet, conn);
-            break;
-        case DISCONNECT:
-            packet = new Packet01Disconnect(data);
-            System.out.println("[" + address.getHostAddress() + ":" + port + "] "
-                    + ((Packet01Disconnect) packet).getUsername() + " has left...");
-            this.removeConnection((Packet01Disconnect) packet);
-            break;
-        case MOVE:
-            packet = new Packet02Move(data);
-            this.handleMove(((Packet02Move) packet));
-            break;
-        case BULLET:
-        	packet = new Packet03Bullet(data);
-            this.handleBullet(((Packet03Bullet) packet));
-            break;
-        case LIFESKILL:
-        	System.out.println("pacchetto life arriva nel server");
-        	packet = new Packet04LifeSkill(data);
-            this.handleLifeSkill(((Packet04LifeSkill) packet));
-           
-        }
-    }
+	public void run() {
+		while (true) {
+			byte[] data = new byte[1024];
+			DatagramPacket packet = new DatagramPacket(data, data.length);
+			try {
+				socket.receive(packet);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			this.parsePacket(packet.getData(), packet.getAddress(), packet.getPort());
+		}
+	}
+
+	private void parsePacket(byte[] data, InetAddress address, int port) {
+		String message = new String(data).trim();
+		PacketTypes type = Packet.lookupPacket(message.substring(0, 2));
+		Packet packet = null;
+		switch (type) {
+		default:
+		case INVALID:
+			break;
+		case LOGIN:
+			packet = new Packet00Login(data);
+			handleLogin((Packet00Login)packet, address, port);
+			break;
+		case DISCONNECT:
+			packet = new Packet01Disconnect(data);
+			System.out.println("[" + address.getHostAddress() + ":" + port + "] "
+					+ ((Packet01Disconnect) packet).getUsername() + " has left...");
+			this.removeConnection((Packet01Disconnect) packet);
+			break;
+		case MOVE:
+			packet = new Packet02Move(data);
+			this.handleMove(((Packet02Move) packet));
+			break;
+		case BULLET:
+			packet = new Packet03Bullet(data);
+			this.handleBullet(((Packet03Bullet) packet));
+			break;
+		case LIFESKILL:
+			System.out.println("pacchetto life arriva nel server");
+			packet = new Packet04LifeSkill(data);
+			this.handleLifeSkill(((Packet04LifeSkill) packet));
+		}
+	}
 
 
 	public void addConnection(Packet00Login packet, Connessione conn) {
-        boolean alreadyConnected=false;
-        for (Connessione p : this.playerConnessi) {
-        	if (packet.getUsername().equalsIgnoreCase(p.getUsername())) {
-                if (p.ipAddress == null) {
-                    p.ipAddress = conn.ipAddress;
-                }
-                if (p.port == -1) {
-                    p.port = conn.port;
-                }
-                alreadyConnected = true;
-            } 
-            else {
-                sendData(packet.getData(), p.ipAddress, p.port);
-                packet = new Packet00Login(p.getUsername(), p.getX(), p.getY());        
-                sendData(packet.getData(), conn.ipAddress, conn.port);                
-            }
-        }
-        if (!alreadyConnected) {
-            this.playerConnessi.add(conn);
-        }
-    }
-
-
-    public void removeConnection(Packet01Disconnect packet) {
-    	 if (getEntityMP(packet.getUsername()) != null) {
-             int index = getEntityMPIndex(packet.getUsername());
-             Connessione conn = this.playerConnessi.get(index);
-             
-             sendToAllButSender(packet, conn);
-             playerConnessi.remove(conn);
-          }
-    }
-    
-    private void handleLifeSkill(Packet04LifeSkill packet) {
-    	if (getEntityMP(packet.getUsername()) != null) {
-         	int index = getEntityMPIndex(packet.getUsername());
-            Connessione conn = this.playerConnessi.get(index);
-            sendToAllButSender(packet, conn);
-            System.out.println("pacchetto life spedito dal server");
-         }
-	}
-    
-    
-    private void handleBullet(Packet03Bullet packet) {
-    	 if (getEntityMP(packet.getUsername()) != null) {
-         	int index = getEntityMPIndex(packet.getUsername());
-            Connessione conn = this.playerConnessi.get(index);
-            sendToAllButSender(packet, conn);
-         }
+		boolean alreadyConnected=false;
+		for (Connessione p : this.playerConnessi) {
+			if (packet.getUsername().equalsIgnoreCase(p.getUsername())) {
+				if (p.ipAddress == null) {
+					p.ipAddress = conn.ipAddress;
+				}
+				if (p.port == -1) {
+					p.port = conn.port;
+				}
+				alreadyConnected = true;
+			} 
+			else {
+				sendData(packet.getData(), p.ipAddress, p.port);
+				packet = new Packet00Login(p.getUsername(), p.getX(), p.getY());        
+				sendData(packet.getData(), conn.ipAddress, conn.port);                
+			}
+		}
+		if (!alreadyConnected) {
+			this.playerConnessi.add(conn);
+		}
 	}
 
-    
-    private void handleMove(Packet02Move packet) {
-        if (getEntityMP(packet.getUsername()) != null) {
-        	int index = getEntityMPIndex(packet.getUsername());
-            Connessione conn = this.playerConnessi.get(index);
-            updateConnessione(packet, conn);
-            sendToAllButSender(packet, conn);
-        }
-    }
-    
-    public void sendData(byte[] data, InetAddress ipAddress, int port) {
-    	DatagramPacket packet = new DatagramPacket(data, data.length, ipAddress, port);
-        try {
-        	this.socket.send(packet);
-        } 
-        catch (IOException e) {
-        	e.printStackTrace();
-        }
-    }
-    
-    public Connessione getEntityMP(String username) {
-        for (Connessione player : this.playerConnessi) {
-            if (player.getUsername().equals(username)) {
-                return player;
-            }
-        }
-        return null;
-    }
-    
-    public int getEntityMPIndex(String username) {
-        int index = 0;
-        for (Connessione player : this.playerConnessi) {
-            if (player.getUsername().equals(username)) {
-                break;
-            }
-            index++;
-        }
-        return index;
-    }
-    
-    private void updateConnessione(Packet02Move packet, Connessione conn) {
-        conn.setX(packet.getPosX());
-        conn.setY(packet.getPosY());
-    }
-    
-    private void sendToAllButSender(Packet packet, Connessione conn) {
-    	for (Connessione p : playerConnessi) {
-        	if (p.ipAddress != conn.ipAddress)
-        		sendData(packet.getData(), p.ipAddress, p.port);
-        }
-    }
-    
-    public void sendDataToAllClients(byte[] data) {
-        for (Connessione p : playerConnessi) {
-            sendData(data, p.ipAddress, p.port);
-        }
-    }
-    
-    
 
-    
-    
+	public void removeConnection(Packet01Disconnect packet) {
+		if (getEntityMP(packet.getUsername()) != null) {
+			int index = getEntityMPIndex(packet.getUsername());
+			Connessione conn = this.playerConnessi.get(index);
+
+			sendToAllButSender(packet, conn);
+			playerConnessi.remove(conn);
+		}
+	}
+
+	public void sendToSender(Packet05ServerAnswer packet, Connessione conn) {
+		System.out.println("pacchetto answe arriva nel sendto sender");
+		for (Connessione p : playerConnessi) {
+			if (p.ipAddress == conn.ipAddress)
+				sendData(packet.getData(), p.ipAddress, p.port);
+			break;
+		}
+	}
+
+
+	public void sendPacket05ServerAnswer(Connessione conn) {
+		System.out.println("pacchetto sendPacket05mmmk");
+		Packet05ServerAnswer packet = new Packet05ServerAnswer(1,1);
+		sendToSender(packet, conn);
+	}
+
+	public void handleLogin(Packet00Login packet, InetAddress address, int port) {
+		System.out.println("arrivo in handle login");
+		System.out.println("[" + address.getHostAddress() + ":" + port + "] "
+				+ ((Packet00Login) packet).getUsername() + " has connected...");
+
+		Connessione conn = new Connessione(((Packet00Login) packet).getUsername(), address, port);
+		this.addConnection((Packet00Login) packet, conn);
+		Packet05ServerAnswer packet05 = new Packet05ServerAnswer(1,1);
+		//sendPacket05ServerAnswer(conn);
+		sendData(packet05.getData(), address, port);
+	}
+
+	private void handleLifeSkill(Packet04LifeSkill packet) {
+		if (getEntityMP(packet.getUsername()) != null) {
+			int index = getEntityMPIndex(packet.getUsername());
+			Connessione conn = this.playerConnessi.get(index);
+			sendToAllButSender(packet, conn);
+			System.out.println("pacchetto life spedito dal server");
+		}
+	}
+
+
+	private void handleBullet(Packet03Bullet packet) {
+		if (getEntityMP(packet.getUsername()) != null) {
+			int index = getEntityMPIndex(packet.getUsername());
+			Connessione conn = this.playerConnessi.get(index);
+			sendToAllButSender(packet, conn);
+		}
+	}
+
+
+	private void handleMove(Packet02Move packet) {
+		if (getEntityMP(packet.getUsername()) != null) {
+			int index = getEntityMPIndex(packet.getUsername());
+			Connessione conn = this.playerConnessi.get(index);
+			updateConnessione(packet, conn);
+			sendToAllButSender(packet, conn);
+		}
+	}
+
+	public void sendData(byte[] data, InetAddress ipAddress, int port) {
+		System.out.println("pacchetto answe arriva nel sendData");
+		DatagramPacket packet = new DatagramPacket(data, data.length, ipAddress, port);
+		try {
+			this.socket.send(packet);
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public Connessione getEntityMP(String username) {
+		for (Connessione player : this.playerConnessi) {
+			if (player.getUsername().equals(username)) {
+				return player;
+			}
+		}
+		return null;
+	}
+
+	public int getEntityMPIndex(String username) {
+		int index = 0;
+		for (Connessione player : this.playerConnessi) {
+			if (player.getUsername().equals(username)) {
+				break;
+			}
+			index++;
+		}
+		return index;
+	}
+
+	private void updateConnessione(Packet02Move packet, Connessione conn) {
+		conn.setX(packet.getPosX());
+		conn.setY(packet.getPosY());
+	}
+
+	private void sendToAllButSender(Packet packet, Connessione conn) {
+		for (Connessione p : playerConnessi) {
+			if (p.ipAddress != conn.ipAddress)
+				sendData(packet.getData(), p.ipAddress, p.port);
+		}
+	}
+
+	public void sendDataToAllClients(byte[] data) {
+		for (Connessione p : playerConnessi) {
+			sendData(data, p.ipAddress, p.port);
+		}
+	}
+
+	@Override
+	public void create() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void resize(int width, int height) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void render() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void dispose() {
+		// TODO Auto-generated method stub
+
+	}
+
+
+
 }

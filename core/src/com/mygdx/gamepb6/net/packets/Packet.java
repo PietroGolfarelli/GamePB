@@ -6,7 +6,7 @@ import com.mygdx.gamepb6.net.GameServer;
 public abstract class Packet {
 
     public static enum PacketTypes {
-        INVALID(-1), LOGIN(00), DISCONNECT(01), MOVE(02), BULLET(03), LIFESKILL(04);
+        INVALID(-1), LOGIN(00), DISCONNECT(01), MOVE(02), BULLET(03), LIFESKILL(04), SERVERANSWER(05);
 
         private int packetId;
 

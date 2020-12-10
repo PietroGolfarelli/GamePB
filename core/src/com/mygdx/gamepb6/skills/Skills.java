@@ -46,6 +46,7 @@ public class Skills {
 		player.gun.setNumeroBullets(player.gun.getNumeroBullets() + 30);
 	}
 	
+	
 	public void shootBigger() {
 		player.gun.shootBigger();
 	}
