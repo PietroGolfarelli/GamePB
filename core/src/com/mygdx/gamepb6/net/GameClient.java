@@ -85,23 +85,24 @@ public class GameClient extends Thread {
             this.handleLifeSkill(((Packet04LifeSkill) packet));
             break;
         case SERVERANSWER:
-        	System.out.println("pacchetto answe arriva nel client");
         	packet = new Packet05ServerAnswer(data);
-            this.handleServerAnswer(((Packet05ServerAnswer) packet));
+            handleServerAnswer(((Packet05ServerAnswer) packet));
         }
     }
 
     
-	private void handleServerAnswer(Packet05ServerAnswer packet05ServerAnswer) {
-		//this.game.setAnswer(true);
-		this.game.loadGame();
+	private void handleServerAnswer(Packet05ServerAnswer packet) {
+		game.setAnswer(true);
+		System.out.println("è arrivata la risposa dal server");
+		game.playscreen.connesso(packet.getSpawnX(), packet.getSpawnY());
+		//game.loadGame();
+		//game.loadGame(true);
 	}
 
 
 	public void sendData(byte[] data) {
     	DatagramPacket packet = new DatagramPacket(data, data.length, ipAddress, 1331);
     	try {
-    		System.out.println("ip: "+ ipAddress + " porta: " + packet.getPort());
     		socket.send(packet);
             } 
     	catch (IOException e) {

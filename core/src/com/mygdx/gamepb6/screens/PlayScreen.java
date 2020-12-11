@@ -75,13 +75,19 @@ public class PlayScreen implements Screen{
 	private Packet03Bullet packetB;
 
 	public TextureAtlas atlasB;
+
+	private String username;
+
+	private boolean aw;
+	private int spawnX, spawnY;
 	
 
     public PlayScreen(MainGame game, String p_username){
-    	//aggiungo commento per git DAICHEVA
+
         atlas = new TextureAtlas("Character.atlas");
         atlasB = new TextureAtlas("textures.atlas");
         this.game = game;
+        this.username = p_username;
         //create cam used to follow mario through cam world
         gamecam = new OrthographicCamera();
         
@@ -115,12 +121,35 @@ public class PlayScreen implements Screen{
         b2dr = new Box2DDebugRenderer();
         creator = new B2WorldCreator(this);
         
-        player = new EntityMP(this, p_username, null, -1);
+        //this.player = new EntityMP(this, p_username, null, -1);
+        aw = false;
+        
 
         world.setContactListener(new WorldContactListener(this));
-        
-    
     }
+    
+    
+    public void connesso(int spawnX, int spawnY) {
+    	System.out.println("sono in create player");
+    	//player = new EntityMP(this, this.username, null, -1);
+    	aw=true;
+    	this.spawnX = spawnX;
+    	this.spawnY = spawnY;
+    }
+    
+    public int getSpawnX() {
+    	return this.spawnX;
+    }
+    
+    public int getSpawnY() {
+    	return this.spawnY;
+    }
+    
+    public void createPlayer() {
+    	player = new EntityMP(this, this.username, null, -1);
+		aw=false;
+    }
+    
     
     public void addNemico (Nemico nemico) {
     	this.listaNemici.add(nemico); 
@@ -171,9 +200,13 @@ public class PlayScreen implements Screen{
     
     
     public void update(float dt){
-    	this.player.input(dt);
-
-    	this.player.update(dt);
+    	if(aw == true) {
+    		createPlayer();
+    	}
+    	if(this.player != null) {
+	    	this.player.input(dt);
+	    	this.player.update(dt);
+	    	}
     	hud.update(dt);
     	
     	for (Nemico e : getEntities()) {
@@ -188,9 +221,11 @@ public class PlayScreen implements Screen{
         world.step(1 / 60f, 6, 2);
         
         //attach our gamecam to our players.x coordinate
-        if (player.currentState != State.DEAD) {
-            gamecam.position.x = player.b2body.getPosition().x;
-            gamecam.position.y = player.b2body.getPosition().y;
+        if(this.player != null) {
+	        if (player.currentState != State.DEAD) {
+	            gamecam.position.x = player.b2body.getPosition().x;
+	            gamecam.position.y = player.b2body.getPosition().y;
+	        }
         }
 
         int wl = 200;  //400
@@ -229,7 +264,7 @@ public class PlayScreen implements Screen{
 
         game.batch.setProjectionMatrix(gamecam.combined);
         game.batch.begin();	
-        
+        if(this.player != null) {
         if (!this.player.gun.zeroBullets()) {
 	        if (Gdx.input.isKeyJustPressed(Input.Keys.W)) {
 	    		shoot(0, 1);
@@ -247,7 +282,7 @@ public class PlayScreen implements Screen{
         else {
         	getHud().setMessaggio("HAI FINITO I BULLETS");
         }
-        
+        }
         
         for (Nemico n : getEntities()) {
         	n.draw(game.batch);
@@ -257,9 +292,9 @@ public class PlayScreen implements Screen{
         for (Bullet b : bullets) {
         	b.draw(game.batch);
         }
-     
+        if(this.player != null) {
         this.player.draw(game.batch);
-       
+        }
         game.batch.end();
         
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);

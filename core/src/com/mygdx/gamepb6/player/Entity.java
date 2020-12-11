@@ -198,7 +198,9 @@ public class Entity extends Sprite {
 
     public void defineplayer(){
         BodyDef bdef = new BodyDef();
-        bdef.position.set(32 / MainGame.PPM, 32 / MainGame.PPM);
+//        bdef.position.set(32 / MainGame.PPM, 32 / MainGame.PPM);
+        bdef.position.set(screen.getSpawnX(), screen.getSpawnY());
+        
         bdef.type = BodyDef.BodyType.DynamicBody;
         bdef.gravityScale= 0.0f;
         b2body = world.createBody(bdef);

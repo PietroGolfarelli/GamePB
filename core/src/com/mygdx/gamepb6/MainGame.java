@@ -42,28 +42,29 @@ public class MainGame extends Game implements Runnable {
     	game=this;
     	batch = new SpriteBatch();
     	running = true;
+    	
         
         thread = new Thread(this, NAME + "_main");
         thread.start();
+        
         
         this.username=JOptionPane.showInputDialog(this, "Please enter a username");
         playscreen= new PlayScreen(game, this.username);
         answer = false;
         timer= 50000;
-    	clientStart();
+        loadGame();
+        clientStart();
     	sendLogin();
     	
 	}
     
     public void loadGame() {
+    	//serverStart();
+    	//clientStart();
     	
-    	
-    	
-    	
-        
-        //serverStart();
-        //clientStart();
+    	System.out.println("carico il gioco...");
     	setScreen(playscreen);
+    	
     }
     /*  
     public void serverStart() {
@@ -109,14 +110,14 @@ public class MainGame extends Game implements Runnable {
     	return this.answer;
     }
     
-    public void waitServerAnswer() {
+   /* public void waitServerAnswer() {
     	while(this.answer != true) {
     		//System.out.println("Client in attesa di una risposta");
     		/*if (timer == 0) {
     			System.out.println("timer a zero");
     			break;
     		}
-    		timer--;*/
+    		timer--;
     	}
     	
     	if (getAnswer() == true) {
@@ -127,7 +128,7 @@ public class MainGame extends Game implements Runnable {
     		System.out.println("Client non ha ricevuto una risposta");
     	}
  
-    }
+    }*/
 
     
     @Override
@@ -139,7 +140,7 @@ public class MainGame extends Game implements Runnable {
     public void dispose() {	
         super.dispose();
 		batch.dispose(); 
-		Packet01Disconnect packet = new Packet01Disconnect(this.playscreen.player.getUsername());
+		Packet01Disconnect packet = new Packet01Disconnect(this.username);
         packet.writeData(this.socketClient);
     }
 
