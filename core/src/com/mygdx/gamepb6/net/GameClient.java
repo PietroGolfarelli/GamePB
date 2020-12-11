@@ -8,6 +8,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+import com.mygdx.gamepb6.graphics.AnimationsPB;
 import com.mygdx.gamepb6.MainGame;
 import com.mygdx.gamepb6.net.packets.Packet;
 import com.mygdx.gamepb6.net.packets.Packet00Login;
@@ -17,7 +18,7 @@ import com.mygdx.gamepb6.net.packets.Packet03Bullet;
 import com.mygdx.gamepb6.net.packets.Packet04LifeSkill;
 import com.mygdx.gamepb6.net.packets.Packet05ServerAnswer;
 import com.mygdx.gamepb6.net.packets.Packet.PacketTypes;
-import com.mygdx.gamepb6.player.Nemico;
+import com.mygdx.gamepb6.entities.Nemico;
 
 
 public class GameClient extends Thread {
@@ -26,7 +27,7 @@ public class GameClient extends Thread {
     private DatagramSocket socket;
     private MainGame game;
 
-    
+
     public GameClient(MainGame game, String ipAddress) {
         this.game = game;
         try {
@@ -82,7 +83,7 @@ public class GameClient extends Thread {
             break;
         case LIFESKILL:
         	packet = new Packet04LifeSkill(data);
-            this.handleLifeSkill(((Packet04LifeSkill) packet));
+            handleLifeSkill(((Packet04LifeSkill) packet));
             break;
         case SERVERANSWER:
         	packet = new Packet05ServerAnswer(data);
@@ -115,21 +116,24 @@ public class GameClient extends Thread {
         System.out.println("[" + address.getHostAddress() + ":" + port + "] " 
         		+ packet.getUsername() + " has joined the game...");
     	
-        Nemico nemico = new Nemico(this.game.playscreen, packet.getUsername(), 
+       /* Nemico nemico = new Nemico(game.playscreen, packet.getUsername(), 
         		address , port, packet.getX(), packet.getY());
         
-        this.game.playscreen.addNemico(nemico);
+        game.playscreen.addNemico(nemico);*/
+        game.playscreen.nuovoNemico(packet);
     }
 
-    
+
     private void handleMove(Packet02Move packet) {
-        game.playscreen.movePlayers(packet.getUsername(), packet.getX(), 
-        		packet.getY(), packet.getPosX(), packet.getPosY());
+    	//    	System.out.println(packet.getUsername() + game.playscreen.getUsername());
+
+    	game.playscreen.movePlayers(packet.getUsername(), packet.getX(), 
+    			packet.getY(), packet.getPosX(), packet.getPosY());
+
     }
-    
+
     private void handleBullet(Packet03Bullet packet) {
     	game.playscreen.firePlayers(packet.getUsername(), packet.getDirx(), packet.getDiry());
-		
 	}
     
     private void handleLifeSkill(Packet04LifeSkill packet) {

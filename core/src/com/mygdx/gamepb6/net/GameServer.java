@@ -27,6 +27,17 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 	private List<Connessione> playerConnessi = new ArrayList<Connessione>();
 	public boolean running=false;
 	private Thread thread;
+	private List<String> listUsername = new ArrayList<String>();
+	private String username;
+	/*private List<Integer> spawnX = new ArrayList<Integer>();
+	private List<Integer> spawnY = new ArrayList<Integer>();
+	*/
+	
+	int spawnX[] = {1, 1, 6, 6};
+	int spawnY[] = {1, 3, 3, 1};
+	
+	private int countgiocatori=0;
+
 
 	public GameServer(/*MainGame game*/) {
 		//this.game = game;
@@ -39,6 +50,7 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 		} catch (SocketException e) {
 			e.printStackTrace();
 		}
+		//loadSpawn();
 	}
 
 	public boolean isRunning() {
@@ -74,7 +86,12 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 			break;
 		case LOGIN:
 			packet = new Packet00Login(data);
+			countgiocatori++;
+			if (countgiocatori > 4) {
+				countgiocatori = 1;
+			}
 			handleLogin((Packet00Login)packet, address, port);
+			this.controlUsername(((Packet00Login) packet).getUsername());
 			break;
 		case DISCONNECT:
 			packet = new Packet01Disconnect(data);
@@ -112,7 +129,7 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 			} 
 			else {
 				sendData(packet.getData(), p.ipAddress, p.port);
-				packet = new Packet00Login(p.getUsername(), p.getX(), p.getY());        
+				packet = new Packet00Login(p.getUsername(), p.getX(), p.getY());
 				sendData(packet.getData(), conn.ipAddress, conn.port);                
 			}
 		}
@@ -133,7 +150,6 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 	}
 
 	public void sendToSender(Packet05ServerAnswer packet, Connessione conn) {
-		System.out.println("pacchetto answe arriva nel sendto sender");
 		for (Connessione p : playerConnessi) {
 			if (p.ipAddress == conn.ipAddress)
 				sendData(packet.getData(), p.ipAddress, p.port);
@@ -143,22 +159,24 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 
 
 	public void sendPacket05ServerAnswer(Connessione conn) {
-		System.out.println("pacchetto sendPacket05mmmk");
 		Packet05ServerAnswer packet = new Packet05ServerAnswer(1,1);
 		sendToSender(packet, conn);
 	}
 
 	public void handleLogin(Packet00Login packet, InetAddress address, int port) {
-		System.out.println("arrivo in handle login");
 		System.out.println("[" + address.getHostAddress() + ":" + port + "] "
 				+ ((Packet00Login) packet).getUsername() + " has connected...");
 
 		Connessione conn = new Connessione(((Packet00Login) packet).getUsername(), address, port);
-		this.addConnection((Packet00Login) packet, conn);
-		Packet05ServerAnswer packet05 = new Packet05ServerAnswer(1,1);
-		//sendPacket05ServerAnswer(conn);
+		packet.setX(getSpawnX());
+		packet.setY(getSpawnY());
+		conn.setX(getSpawnX());
+		conn.setY(getSpawnY());
+		addConnection((Packet00Login) packet, conn);
+		Packet05ServerAnswer packet05 = new Packet05ServerAnswer(getSpawnX(),getSpawnY());
 		sendData(packet05.getData(), address, port);
 	}
+
 
 	private void handleLifeSkill(Packet04LifeSkill packet) {
 		if (getEntityMP(packet.getUsername()) != null) {
@@ -189,7 +207,6 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 	}
 
 	public void sendData(byte[] data, InetAddress ipAddress, int port) {
-		System.out.println("pacchetto answe arriva nel sendData");
 		DatagramPacket packet = new DatagramPacket(data, data.length, ipAddress, port);
 		try {
 			this.socket.send(packet);
@@ -236,6 +253,71 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 			sendData(data, p.ipAddress, p.port);
 		}
 	}
+
+	public void controlUsername(String username){
+		for(String name:listUsername) {
+			if(username==name) {
+				newUsername(username);
+				addUsername(username);		
+			}
+			else
+				addUsername(username);
+		}
+
+	}
+
+	public void addUsername(String username) {
+		listUsername.add(username);
+
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void newUsername(String username) {
+		String newusername;
+		newusername = username+"1";
+		controlUsername(newusername);
+
+	}
+
+	/*private void loadSpawn() {
+		spawnX.add(1);		//(1,1) (1,4) (7,4) (7,1)
+		spawnY.add(1);
+		
+		spawnX.add(1);      
+		spawnY.add(3);
+		
+		spawnX.add(6);
+		spawnY.add(3);
+		
+		spawnX.add(6);
+		spawnY.add(1);
+	}
+
+	
+	private int contaconnessioni() {
+		for (Connessione c : playerConnessi) {
+			countgiocatori++;
+			if(countgiocatori>4)
+				countgiocatori = 1;
+		}		
+		return countgiocatori ;
+	}
+*/
+	
+	public int getSpawnX() {
+		return spawnX[countgiocatori - 1];
+	}
+
+
+	public int getSpawnY() {
+		return spawnY[countgiocatori - 1];
+	}
+	 
+
+	
 
 	@Override
 	public void create() {

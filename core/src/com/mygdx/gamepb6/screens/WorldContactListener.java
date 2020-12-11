@@ -7,7 +7,7 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
-import com.mygdx.gamepb6.player.Entity;
+import com.mygdx.gamepb6.entities.Entity;
 
 public class WorldContactListener implements ContactListener {
 	
@@ -27,11 +27,7 @@ public class WorldContactListener implements ContactListener {
 		// TODO Auto-generated method stub
 		Fixture fixA = contact.getFixtureA();
         Fixture fixB = contact.getFixtureB();
-
-        /*if(fixA.getUserData()=="OggettiDuri" || fixB.getUserData()=="OggettiDuri"){
-        	//System.out.println("Contact detected OggettiDuri");
-        } */
-        
+   
         if(fixA.getUserData()=="Cassa1" && fixB.getUserData()=="Player" || 
         		fixA.getUserData()=="Player" && fixB.getUserData()=="Cassa1"){
         	if (cassa1 == true) {

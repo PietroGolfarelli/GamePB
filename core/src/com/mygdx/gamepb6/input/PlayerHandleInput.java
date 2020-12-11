@@ -4,18 +4,18 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.mygdx.gamepb6.net.packets.Packet02Move;
-import com.mygdx.gamepb6.player.Entity;
+import com.mygdx.gamepb6.entities.Player;
 
-public class HandleInput {
+public class PlayerHandleInput {
 	private Body body;
 	private int posX;
 	private int posY;
 	private boolean enableSkill;
-	private Entity player;
+	private Player player;
 	
-	public HandleInput(Entity entity) {
-		this.player = entity;
-		this.body = entity.b2body;
+	public PlayerHandleInput(Player player) {
+		this.player = player;
+		this.body = player.b2body;
 		this.posX=0;
 		this.posY=0;
 		this.enableSkill=false;
@@ -94,9 +94,7 @@ public class HandleInput {
 	public void setPosX(int posX) {
 		this.posX = posX;
 	}
-
-
-
+	
 	public int getPosY() {
 		return posY;
 	}

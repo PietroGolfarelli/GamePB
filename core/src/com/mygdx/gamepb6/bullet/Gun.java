@@ -1,9 +1,5 @@
-package com.mygdx.gamepb6.player;
+package com.mygdx.gamepb6.bullet;
 
-import com.mygdx.gamepb6.bullet.Bullet;
-import com.mygdx.gamepb6.bullet.NormalBullet;
-import com.mygdx.gamepb6.bullet.SpeedBullet;
-import com.mygdx.gamepb6.bullet.SuperBullet;
 import com.mygdx.gamepb6.graphics.GraphicsPB;
 import com.mygdx.gamepb6.screens.PlayScreen;
 

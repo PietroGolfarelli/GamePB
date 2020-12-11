@@ -26,16 +26,15 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.gamepb6.MainGame;
 import com.mygdx.gamepb6.graphics.GraphicsPB;
+import com.mygdx.gamepb6.net.packets.Packet00Login;
 import com.mygdx.gamepb6.net.packets.Packet03Bullet;
 import com.mygdx.gamepb6.bullet.Bullet;
-import com.mygdx.gamepb6.player.Entity;
-import com.mygdx.gamepb6.player.EntityMP;
-import com.mygdx.gamepb6.player.Nemico;
-import com.mygdx.gamepb6.player.Entity.State;
+import com.mygdx.gamepb6.entities.Entity.State;
+import com.mygdx.gamepb6.entities.Nemico;
+import com.mygdx.gamepb6.entities.Player;
 
 
 
@@ -62,13 +61,11 @@ public class PlayScreen implements Screen{
 	@SuppressWarnings("unused")
 	private B2WorldCreator creator;
 	
-	public EntityMP player;
+	public Player player;
 
-    private List<EntityMP> nemici = new ArrayList<EntityMP>();
+    //private List<EntityMP> nemici = new ArrayList<EntityMP>();
 	private List<Nemico> listaNemici = new ArrayList<Nemico>();
 	public Nemico nemico;
-	
-	
 	
 	public ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	
@@ -76,10 +73,13 @@ public class PlayScreen implements Screen{
 
 	public TextureAtlas atlasB;
 
-	private String username;
+	public String username;
 
 	private boolean aw;
 	private int spawnX, spawnY;
+
+	private boolean nuovonemico;
+	private Packet00Login packetlogin;
 	
 
     public PlayScreen(MainGame game, String p_username){
@@ -123,9 +123,10 @@ public class PlayScreen implements Screen{
         
         //this.player = new EntityMP(this, p_username, null, -1);
         aw = false;
-        
-
         world.setContactListener(new WorldContactListener(this));
+        
+        player = null;
+        nuovonemico = false;
     }
     
     
@@ -146,14 +147,25 @@ public class PlayScreen implements Screen{
     }
     
     public void createPlayer() {
-    	player = new EntityMP(this, this.username, null, -1);
+    	player = new Player(this, this.username, this.spawnX, this.spawnY);
 		aw=false;
+    }
+    
+    public void createNemico(Packet00Login packet) {
+    	nemico = new Nemico(game.playscreen, packet.getUsername(), packet.getX(), packet.getY());
+		nuovonemico=false;
+		addNemico(nemico);
     }
     
     
     public void addNemico (Nemico nemico) {
     	this.listaNemici.add(nemico); 
     }
+    
+    public void nuovoNemico(Packet00Login packet) {
+		nuovonemico = true;
+		this.packetlogin = packet;
+	}
     
     public void addBullet (Bullet bullet) {
     	bullets.add(bullet);
@@ -185,11 +197,16 @@ public class PlayScreen implements Screen{
         return nemico;
     }
     
+    public String getUsername() {
+    	return this.username;
+    }
+    
     
     public synchronized void movePlayers(String username, int posX, int posY, float x, float y) {
+    	//System.out.println(usernameS + " " + this.username);
     	Nemico n = getNemico(username);
     	if (n != null) {
-	    	n.handleInput(posX, posY, x, y);
+	    	n.handleInput(posX, posY);
     	}
     }
        
@@ -200,13 +217,17 @@ public class PlayScreen implements Screen{
     
     
     public void update(float dt){
+    	if(nuovonemico == true) {
+    		createNemico(this.packetlogin);
+    	}
+    	
     	if(aw == true) {
     		createPlayer();
     	}
-    	if(this.player != null) {
-	    	this.player.input(dt);
-	    	this.player.update(dt);
-	    	}
+    	if(player != null) {
+	    	player.handleInput(dt);
+	    	player.update(dt);
+	    }
     	hud.update(dt);
     	
     	for (Nemico e : getEntities()) {
@@ -221,8 +242,8 @@ public class PlayScreen implements Screen{
         world.step(1 / 60f, 6, 2);
         
         //attach our gamecam to our players.x coordinate
-        if(this.player != null) {
-	        if (player.currentState != State.DEAD) {
+        if(player != null) {
+	        if (player.getCurrentState() != State.DEAD) {
 	            gamecam.position.x = player.b2body.getPosition().x;
 	            gamecam.position.y = player.b2body.getPosition().y;
 	        }
@@ -331,13 +352,12 @@ public class PlayScreen implements Screen{
     }
     
     public synchronized void nemicoLifeSkill(String username, int code) {
-    	System.out.println("arriva in nemicoLife del client " + this.player.username);
     	Nemico n = getNemico(username);
     	if (n != null) {
     		if (code >= 0)
     			n.setLife(code);
     		else 
-				n.setSkills(code);
+				n.skills.skillType(code);
     	}
     }
     
@@ -420,5 +440,4 @@ public class PlayScreen implements Screen{
 		// TODO Auto-generated method stub
 		
 	}
-
 }

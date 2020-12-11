@@ -1,58 +1,58 @@
 package com.mygdx.gamepb6.skills;
 
-import com.mygdx.gamepb6.player.Entity;
+import com.mygdx.gamepb6.entities.Entity;
 
 public class Skills {
 	
-	private Entity player;
+	private Entity entity;
 
-	public Skills(Entity player) {
-		this.player = player;
+	public Skills(Entity entity) {
+		this.entity = entity;
 	}
 	
 	public void skillType(int skillType) {
 		if (skillType == -1) {
     		moreLife();
-    		player.screen.getHud().setLife(player.getLife());
-    		player.getHud().setMessaggio("LIFEPOINTS AUMENTATI");
-    		player.gun.updateHud();
+    		/*entity.screen.getHud().setLife(entity.getLife());
+    		entity.getHud().setMessaggio("LIFEPOINTS AUMENTATI");
+    		entity.gun.updateHud();*/
     	}
     	
     	if (skillType == -2) {
     		shootBigger();
-    		player.getHud().setMessaggio("BIG-BULLET ACTIVATED");
+    		//entity.getHud().setMessaggio("BIG-BULLET ACTIVATED");
     	}
     	
     	if (skillType == -3) {
     		ricarica();
-    		player.getHud().setMessaggio("RICARICA BULLET EFFETTUATA");
-    		player.gun.updateHud();
+    		/*entity.getHud().setMessaggio("RICARICA BULLET EFFETTUATA");
+    		entity.gun.updateHud();*/
     	}
     	
     	if (skillType == -4) {
     		shootFaster();
-    		player.getHud().setMessaggio("SPEED-BULLET ACTIVATED");
+    		//entity.getHud().setMessaggio("SPEED-BULLET ACTIVATED");
     	}
     	
-    	player.input.setEnableSkill(false);
-    	player.sendPacket04LifeSkill(skillType);
+    	//entity.input.setEnableSkill(false);
+    	//entity.sendPacket04LifeSkill(skillType);
 	}
 	
 	public void shootFaster() {
-		player.gun.shootFaster();
+		entity.gun.shootFaster();
 	}
 	
 	public void ricarica() {
-		player.gun.setNumeroBullets(player.gun.getNumeroBullets() + 30);
+		entity.gun.setNumeroBullets(entity.gun.getNumeroBullets() + 30);
 	}
 	
 	
 	public void shootBigger() {
-		player.gun.shootBigger();
+		entity.gun.shootBigger();
 	}
 	
 	public void moreLife() {
-		player.setLife(player.getLife() + 50 );
+		entity.setLife(entity.getLife() + 50 );
     }
 	
 	public void getSkill() {

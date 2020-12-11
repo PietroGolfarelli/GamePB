@@ -4,13 +4,14 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
-import com.mygdx.gamepb6.player.Entity.State;
+import com.mygdx.gamepb6.entities.Entity.State;
 
 public class AnimationsPB {
 	
 	public enum State { STANDING, LEFT, RIGHT, DEAD }
     public State currentState;
     private Animation animation;
+  
     
 	private TextureAtlas atlas;
 	private TextureRegion playerDead;
