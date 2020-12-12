@@ -39,18 +39,13 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 	private int countgiocatori=0;
 
 
-	public GameServer(/*MainGame game*/) {
-		//this.game = game;
-		/*thread = new Thread(this, "gianniServer");
-        thread.start();
-    	this.start();*/
+	public GameServer() {
 		setRunning(true);
 		try {
 			this.socket = new DatagramSocket(1331);
 		} catch (SocketException e) {
 			e.printStackTrace();
 		}
-		//loadSpawn();
 	}
 
 	public boolean isRunning() {
@@ -91,7 +86,7 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 				countgiocatori = 1;
 			}
 			handleLogin((Packet00Login)packet, address, port);
-			this.controlUsername(((Packet00Login) packet).getUsername());
+//			controlUsername(((Packet00Login) packet).getUsername());
 			break;
 		case DISCONNECT:
 			packet = new Packet01Disconnect(data);
@@ -114,30 +109,15 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 		}
 	}
 
-
 	public void addConnection(Packet00Login packet, Connessione conn) {
-		boolean alreadyConnected=false;
-		for (Connessione p : this.playerConnessi) {
-			if (packet.getUsername().equalsIgnoreCase(p.getUsername())) {
-				if (p.ipAddress == null) {
-					p.ipAddress = conn.ipAddress;
-				}
-				if (p.port == -1) {
-					p.port = conn.port;
-				}
-				alreadyConnected = true;
-			} 
-			else {
-				sendData(packet.getData(), p.ipAddress, p.port);
-				packet = new Packet00Login(p.getUsername(), p.getX(), p.getY());
-				sendData(packet.getData(), conn.ipAddress, conn.port);                
-			}
+		sendToAllButSender(packet, conn);
+		for (Connessione p : playerConnessi) {
+			packet = new Packet00Login(p.getUsername(), p.getX(), p.getY());
+			sendData(packet.getData(), conn.ipAddress, conn.port);  
 		}
-		if (!alreadyConnected) {
-			this.playerConnessi.add(conn);
-		}
+		playerConnessi.add(conn);
 	}
-
+	
 
 	public void removeConnection(Packet01Disconnect packet) {
 		if (getEntityMP(packet.getUsername()) != null) {
@@ -156,24 +136,20 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 			break;
 		}
 	}
-
-
-	public void sendPacket05ServerAnswer(Connessione conn) {
-		Packet05ServerAnswer packet = new Packet05ServerAnswer(1,1);
-		sendToSender(packet, conn);
-	}
+	
 
 	public void handleLogin(Packet00Login packet, InetAddress address, int port) {
+		String usernameCorretto = controlUsername(packet.getUsername());
+		packet.setUsername(usernameCorretto);
 		System.out.println("[" + address.getHostAddress() + ":" + port + "] "
-				+ ((Packet00Login) packet).getUsername() + " has connected...");
-
-		Connessione conn = new Connessione(((Packet00Login) packet).getUsername(), address, port);
+				+ usernameCorretto + " has connected...");
+		Connessione conn = new Connessione(packet.getUsername(), address, port);
 		packet.setX(getSpawnX());
 		packet.setY(getSpawnY());
 		conn.setX(getSpawnX());
 		conn.setY(getSpawnY());
 		addConnection((Packet00Login) packet, conn);
-		Packet05ServerAnswer packet05 = new Packet05ServerAnswer(getSpawnX(),getSpawnY());
+		Packet05ServerAnswer packet05 = new Packet05ServerAnswer(getSpawnX(),getSpawnY(), packet.getUsername());
 		sendData(packet05.getData(), address, port);
 	}
 
@@ -183,12 +159,10 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 			int index = getEntityMPIndex(packet.getUsername());
 			Connessione conn = this.playerConnessi.get(index);
 			sendToAllButSender(packet, conn);
-			System.out.println("pacchetto life spedito dal server");
 		}
 	}
 
-
-	private void handleBullet(Packet03Bullet packet) {
+ void handleBullet(Packet03Bullet packet) {
 		if (getEntityMP(packet.getUsername()) != null) {
 			int index = getEntityMPIndex(packet.getUsername());
 			Connessione conn = this.playerConnessi.get(index);
@@ -254,15 +228,30 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 		}
 	}
 
-	public void controlUsername(String username){
-		for(String name:listUsername) {
+	public String controlUsername(String username){
+		/*for(String name:listUsername) {
 			if(username==name) {
 				newUsername(username);
 				addUsername(username);		
 			}
 			else
 				addUsername(username);
+		}*/
+		String newusername;
+		boolean univoco = true;
+		
+		for (Connessione c : playerConnessi) {
+			if (c.getUsername().equals(username)) {
+				univoco = false;
+				break;
+			}
 		}
+		if (univoco == false)
+			newusername = newUsername(username);
+		else 
+			newusername = username;
+		
+		return newusername;
 
 	}
 
@@ -275,38 +264,14 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 		return username;
 	}
 
-	public void newUsername(String username) {
+	public String newUsername(String username) {
 		String newusername;
 		newusername = username+"1";
-		controlUsername(newusername);
-
+		newusername = controlUsername(newusername);
+		return newusername;
+		//return newusername;
 	}
 
-	/*private void loadSpawn() {
-		spawnX.add(1);		//(1,1) (1,4) (7,4) (7,1)
-		spawnY.add(1);
-		
-		spawnX.add(1);      
-		spawnY.add(3);
-		
-		spawnX.add(6);
-		spawnY.add(3);
-		
-		spawnX.add(6);
-		spawnY.add(1);
-	}
-
-	
-	private int contaconnessioni() {
-		for (Connessione c : playerConnessi) {
-			countgiocatori++;
-			if(countgiocatori>4)
-				countgiocatori = 1;
-		}		
-		return countgiocatori ;
-	}
-*/
-	
 	public int getSpawnX() {
 		return spawnX[countgiocatori - 1];
 	}

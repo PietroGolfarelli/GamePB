@@ -95,6 +95,7 @@ public class GameClient extends Thread {
 	private void handleServerAnswer(Packet05ServerAnswer packet) {
 		game.setAnswer(true);
 		System.out.println("è arrivata la risposa dal server");
+		game.playscreen.setUsername(packet.getUsername());
 		game.playscreen.connesso(packet.getSpawnX(), packet.getSpawnY());
 		//game.loadGame();
 		//game.loadGame(true);
@@ -120,6 +121,7 @@ public class GameClient extends Thread {
         		address , port, packet.getX(), packet.getY());
         
         game.playscreen.addNemico(nemico);*/
+        
         game.playscreen.nuovoNemico(packet);
     }
 

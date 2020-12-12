@@ -5,20 +5,23 @@ import com.mygdx.gamepb6.net.GameServer;
 
 public class Packet05ServerAnswer extends Packet {
 	private int spawnX;
-    private int spawnY;    
+    private int spawnY;
+	private String username;    
     
     public Packet05ServerAnswer(byte[] data) {
         super(05);
         String[] dataArray = readData(data).split(",");
         this.spawnX = Integer.parseInt(dataArray[0]);
         this.spawnY = Integer.parseInt(dataArray[1]);
+        this.username = dataArray[2];
     }
     
    
-    public Packet05ServerAnswer(int spawnX, int spawnY) {
+    public Packet05ServerAnswer(int spawnX, int spawnY, String username) {
         super(05);
         this.spawnX = spawnX;
         this.spawnY = spawnY;
+        this.username = username;
     }
 
     @Override
@@ -34,8 +37,18 @@ public class Packet05ServerAnswer extends Packet {
   
     @Override
     public byte[] getData() {
-        return ("05" + this.spawnX + "," + this.spawnY).getBytes();
+        return ("05" + this.spawnX + "," + this.spawnY+ "," + this.username).getBytes();
     }
+
+
+	public String getUsername() {
+		return username;
+	}
+
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
 
 	public int getSpawnX() {

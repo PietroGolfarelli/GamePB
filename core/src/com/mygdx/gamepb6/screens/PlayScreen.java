@@ -79,7 +79,7 @@ public class PlayScreen implements Screen{
 	private int spawnX, spawnY;
 
 	private boolean nuovonemico;
-	private Packet00Login packetlogin;
+	private List<Packet00Login> packetlogin = new ArrayList<Packet00Login>();
 	
 
     public PlayScreen(MainGame game, String p_username){
@@ -151,20 +151,28 @@ public class PlayScreen implements Screen{
 		aw=false;
     }
     
-    public void createNemico(Packet00Login packet) {
-    	nemico = new Nemico(game.playscreen, packet.getUsername(), packet.getX(), packet.getY());
+    public void createNemico() {
+    	for (Packet00Login packet : packetlogin) {
+    		nemico = new Nemico(game.playscreen, packet.getUsername(), packet.getX(), packet.getY());
+    		addNemico(nemico);
+    	}
+    	packetlogin.clear();
 		nuovonemico=false;
-		addNemico(nemico);
     }
     
     
-    public void addNemico (Nemico nemico) {
+    public void setUsername(String username) {
+		this.username = username;
+	}
+
+
+	public void addNemico (Nemico nemico) {
     	this.listaNemici.add(nemico); 
     }
     
     public void nuovoNemico(Packet00Login packet) {
 		nuovonemico = true;
-		this.packetlogin = packet;
+		packetlogin.add(packet);
 	}
     
     public void addBullet (Bullet bullet) {
@@ -218,7 +226,7 @@ public class PlayScreen implements Screen{
     
     public void update(float dt){
     	if(nuovonemico == true) {
-    		createNemico(this.packetlogin);
+    		createNemico();
     	}
     	
     	if(aw == true) {

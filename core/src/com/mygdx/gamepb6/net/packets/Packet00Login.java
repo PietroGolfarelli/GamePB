@@ -20,6 +20,7 @@ public class Packet00Login extends Packet {
 
    
 
+
 	public Packet00Login(String username, float f, float g) {
         super(00);
         this.username = username;
@@ -41,6 +42,11 @@ public class Packet00Login extends Packet {
     public byte[] getData() {
         return ("00" + this.username + "," + getX() + "," + getY()).getBytes();
     }
+    
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
     public String getUsername() {
         return username;

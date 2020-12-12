@@ -59,23 +59,9 @@ public class MainGame extends Game implements Runnable {
 	}
     
     public void loadGame() {
-    	//serverStart();
-    	//clientStart();
-    	
     	System.out.println("carico il gioco...");
-    	setScreen(playscreen);
-    	
+    	setScreen(playscreen);	
     }
-    /*  
-    public void serverStart() {
-    	System.out.println("Accendo il server...");
-        if (!isApplet) {
-            if (socketServer == null) {
-                socketServer = new GameServer(this);
-                socketServer.start();
-            }            
-        }
-    }*/
     
     
     public void clientStart() {
@@ -85,21 +71,8 @@ public class MainGame extends Game implements Runnable {
     
     
     public void sendLogin() {
-    	/*Packet00Login loginPacket = new Packet00Login(playscreen.player.getUsername(), this.playscreen.player.getX(), 
-				this.playscreen.player.getY());
-		if (socketServer != null) {
-			loginPacket.writeData(socketClient);
-		}
-		else {
-			System.out.println("ERRORE NEL LOGIN, SERVER SPENTO");
-			loginPacket.writeData(socketClient);
-		}*/
-    	
-
     	Packet00Login loginPacket = new Packet00Login(this.username, 1, 1);
-    	
 		loginPacket.writeData(socketClient);		
-		//waitServerAnswer();
     }
     
     public void setAnswer(boolean answer) {
@@ -110,27 +83,6 @@ public class MainGame extends Game implements Runnable {
     	return this.answer;
     }
     
-   /* public void waitServerAnswer() {
-    	while(this.answer != true) {
-    		//System.out.println("Client in attesa di una risposta");
-    		/*if (timer == 0) {
-    			System.out.println("timer a zero");
-    			break;
-    		}
-    		timer--;
-    	}
-    	
-    	if (getAnswer() == true) {
-    		System.out.println("Client ha ricevuto una risposta");
-    		loadGame();
-    	}
-    	else {
-    		System.out.println("Client non ha ricevuto una risposta");
-    	}
- 
-    }*/
-
-    
     @Override
     public void render() {
     	  super.render();
@@ -140,7 +92,7 @@ public class MainGame extends Game implements Runnable {
     public void dispose() {	
         super.dispose();
 		batch.dispose(); 
-		Packet01Disconnect packet = new Packet01Disconnect(this.username);
+		Packet01Disconnect packet = new Packet01Disconnect(playscreen.getUsername());
         packet.writeData(this.socketClient);
     }
 
