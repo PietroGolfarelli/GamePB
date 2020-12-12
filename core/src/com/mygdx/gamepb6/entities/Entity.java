@@ -40,14 +40,13 @@ public abstract class Entity extends Sprite {
 		this.spawnX = spawnX;
 		this.spawnY = spawnY;
 		this.type = type;
-		playerIsDead=false;
+		playerIsDead = false;
 		defineplayer();
 
 		currentState = State.STANDING;
 		previousState = State.STANDING;
 
 		setBounds(0, 0, 16 / MainGame.PPM, 16 / MainGame.PPM);
-
 		setRegion(animations.getPlayerStand());
 	}
 

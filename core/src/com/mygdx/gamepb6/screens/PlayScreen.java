@@ -9,6 +9,7 @@ import org.ietf.jgss.GSSName;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -409,6 +410,7 @@ public class PlayScreen implements Screen{
 	public void setHud(GraphicsPB hud) {
 		this.hud = hud;
 	}
+	
 
   
     @Override
@@ -448,4 +450,6 @@ public class PlayScreen implements Screen{
 		// TODO Auto-generated method stub
 		
 	}
+
+
 }

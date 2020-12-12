@@ -1,10 +1,13 @@
 package com.mygdx.gamepb6.entities;
 
+import com.badlogic.gdx.Screen;
 import com.mygdx.gamepb6.bullet.Gun;
 import com.mygdx.gamepb6.graphics.GraphicsPB;
 import com.mygdx.gamepb6.input.PlayerHandleInput;
+import com.mygdx.gamepb6.net.packets.Packet01Disconnect;
 import com.mygdx.gamepb6.net.packets.Packet02Move;
 import com.mygdx.gamepb6.net.packets.Packet04LifeSkill;
+import com.mygdx.gamepb6.screens.GameOver;
 import com.mygdx.gamepb6.screens.PlayScreen;
 import com.mygdx.gamepb6.skills.PlayerSkills;
 
@@ -52,9 +55,19 @@ public class Player extends Entity {
     	life = life - 10;
     	screen.getHud().setLife(life);
     	sendPacket04LifeSkill(life);
+    	checkLife();
     }
     
-    public void skills() {
+    private void checkLife() {
+		if (getLife() == 0) {
+			this.currentState = State.DEAD;
+			screen.game.died();
+		}
+		
+	}
+
+
+	public void skills() {
 		skills.getSkill();
 	}
 }

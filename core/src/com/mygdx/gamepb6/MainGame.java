@@ -2,12 +2,14 @@ package com.mygdx.gamepb6;
 
 import javax.swing.JOptionPane;
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.gamepb6.net.Connessione;
 import com.mygdx.gamepb6.net.GameClient;
 import com.mygdx.gamepb6.net.GameServer;
 import com.mygdx.gamepb6.net.packets.Packet00Login;
 import com.mygdx.gamepb6.net.packets.Packet01Disconnect;
+import com.mygdx.gamepb6.screens.GameOver;
 import com.mygdx.gamepb6.screens.PlayScreen;
 
 
@@ -24,6 +26,7 @@ public class MainGame extends Game implements Runnable {
     
     public SpriteBatch batch;
     public PlayScreen playscreen;
+    private Screen gameOver;
     
     public Connessione conn;
     public GameClient socketClient;
@@ -35,6 +38,7 @@ public class MainGame extends Game implements Runnable {
 	private String username;
 	private boolean answer;
 	private int timer;
+	private String serverIP;
     
 	
     @Override
@@ -46,10 +50,10 @@ public class MainGame extends Game implements Runnable {
         
         thread = new Thread(this, NAME + "_main");
         thread.start();
-        
-        
+        this.serverIP=JOptionPane.showInputDialog(this, "Please enter IP del server");
         this.username=JOptionPane.showInputDialog(this, "Please enter a username");
         playscreen= new PlayScreen(game, this.username);
+        gameOver = new GameOver(game, playscreen);
         answer = false;
         timer= 50000;
         loadGame();
@@ -65,7 +69,7 @@ public class MainGame extends Game implements Runnable {
     
     
     public void clientStart() {
-    	socketClient = new GameClient(this, "localhost");
+    	socketClient = new GameClient(this, this.serverIP);
         socketClient.start();
     }
     
@@ -83,17 +87,28 @@ public class MainGame extends Game implements Runnable {
     	return this.answer;
     }
     
+    public void died() {
+    	disconnetti();
+		setScreen(gameOver);
+    }
+    
     @Override
     public void render() {
     	  super.render();
+    }
+    
+    public void disconnetti () {
+    	Packet01Disconnect packet = new Packet01Disconnect(playscreen.getUsername());
+        packet.writeData(this.socketClient);
+        running = false;
     }
   
     @Override
     public void dispose() {	
         super.dispose();
 		batch.dispose(); 
-		Packet01Disconnect packet = new Packet01Disconnect(playscreen.getUsername());
-        packet.writeData(this.socketClient);
+		if (running)
+			disconnetti();
     }
 
 	public void run() {
