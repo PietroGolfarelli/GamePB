@@ -71,6 +71,9 @@ public class GameClient extends Thread {
             packet = new Packet01Disconnect(data);
             System.out.println("[" + address.getHostAddress() + ":" + port + "] "
                     + ((Packet01Disconnect) packet).getUsername() + " has left the world...");
+            /*if (game.playscreen != null) {
+            game.playscreen.getHud().setMessaggio("[" + address.getHostAddress() + ":" + port + "] "
+                    + ((Packet01Disconnect) packet).getUsername() + " has left the world...");}*/
             game.playscreen.removeEntityMP(((Packet01Disconnect) packet).getUsername());
             break;
         case MOVE:
@@ -114,13 +117,15 @@ public class GameClient extends Thread {
     
     
     private void handleLogin(Packet00Login packet, InetAddress address, int port) {
-        System.out.println("[" + address.getHostAddress() + ":" + port + "] " 
+    	 System.out.println("[" + address.getHostAddress() + ":" + port + "] " 
         		+ packet.getUsername() + " has joined the game...");
     	
-       /* Nemico nemico = new Nemico(game.playscreen, packet.getUsername(), 
+    	 /*Nemico nemico = new Nemico(game.playscreen, packet.getUsername(), 
         		address , port, packet.getX(), packet.getY());
         
-        game.playscreen.addNemico(nemico);*/
+        game.playscreen.addNemico(nemico);
+    	if (game.playscreen != null) {game.playscreen.getHud().setMessaggio("[" + address.getHostAddress() + ":" + port + "] " 
+        		+ packet.getUsername() + " has joined the game...");}*/
         
         game.playscreen.nuovoNemico(packet);
     }
@@ -139,7 +144,6 @@ public class GameClient extends Thread {
 	}
     
     private void handleLifeSkill(Packet04LifeSkill packet) {
-    	System.out.println("pacchetto life arriva in handlelife del client " );
     	game.playscreen.nemicoLifeSkill(packet.getUsername(), packet.getCode());
 		
 	}

@@ -66,8 +66,9 @@ public class Player extends Entity {
 		
 	}
 
-
 	public void skills() {
 		skills.getSkill();
 	}
+	
+
 }

@@ -31,6 +31,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.gamepb6.MainGame;
 import com.mygdx.gamepb6.graphics.GraphicsPB;
 import com.mygdx.gamepb6.net.packets.Packet00Login;
+import com.mygdx.gamepb6.net.packets.Packet02Move;
 import com.mygdx.gamepb6.net.packets.Packet03Bullet;
 import com.mygdx.gamepb6.bullet.Bullet;
 import com.mygdx.gamepb6.entities.Entity.State;
@@ -81,6 +82,8 @@ public class PlayScreen implements Screen{
 
 	private boolean nuovonemico;
 	private List<Packet00Login> packetlogin = new ArrayList<Packet00Login>();
+	private List<Packet00Login> nemicidarifare = new ArrayList<Packet00Login>();
+	
 	
 
     public PlayScreen(MainGame game, String p_username){
@@ -152,6 +155,7 @@ public class PlayScreen implements Screen{
 		aw=false;
     }
     
+    
     public void createNemico() {
     	for (Packet00Login packet : packetlogin) {
     		nemico = new Nemico(game.playscreen, packet.getUsername(), packet.getX(), packet.getY());
@@ -210,12 +214,25 @@ public class PlayScreen implements Screen{
     	return this.username;
     }
     
+    public void checkPosition(Nemico n, float x, float y) {
+    	if (Math.abs(n.getbX(n) - x) > 0.1 || Math.abs(n.getbY(n) - y) > 0.1 ) {
+    		//removeEntityMP(n.username);
+    		n.setVabene(false);
+    		n.setSpawnX(x);
+    		n.setSpawnY(y);
+    		//Packet00Login packet = new Packet00Login(nem.username, x ,y);
+    		//nemicidarifare.add(packet);
+    	} 
+    }
+    
     
     public synchronized void movePlayers(String username, int posX, int posY, float x, float y) {
     	//System.out.println(usernameS + " " + this.username);
     	Nemico n = getNemico(username);
     	if (n != null) {
 	    	n.handleInput(posX, posY);
+	    	//if (posX == 0 && posY == 0)
+	    	checkPosition(n, x, y);
     	}
     }
        
@@ -233,6 +250,7 @@ public class PlayScreen implements Screen{
     	if(aw == true) {
     		createPlayer();
     	}
+    	
     	if(player != null) {
 	    	player.handleInput(dt);
 	    	player.update(dt);
@@ -240,6 +258,8 @@ public class PlayScreen implements Screen{
     	hud.update(dt);
     	
     	for (Nemico e : getEntities()) {
+    		if (e.isVabene() == false)
+    			e.redefine();
 	     	e.update(dt);
 	     }
 		 
@@ -280,6 +300,21 @@ public class PlayScreen implements Screen{
         renderer.setView(gamecam);
     }  	
    
+
+	/*private void rigeneraNemico(Nemico e) {
+		removeEntityMP(e.username);
+		//Packet00Login packetUsato;
+		for (Packet00Login packet : nemicidarifare) {
+			if ( packet.getUsername().equals(e.getUsername()) ) {
+				nemico = new Nemico(game.playscreen, packet.getUsername(), packet.getX(), packet.getY());
+				addNemico(nemico);
+				//packetUsato = packet;
+				nemicidarifare.remove(packet);
+				break;
+			}
+    	}
+	}*/
+
 
 	@Override
     public void render(float delta) {
@@ -323,7 +358,7 @@ public class PlayScreen implements Screen{
         	b.draw(game.batch);
         }
         if(this.player != null) {
-        this.player.draw(game.batch);
+        	this.player.draw(game.batch);
         }
         game.batch.end();
         

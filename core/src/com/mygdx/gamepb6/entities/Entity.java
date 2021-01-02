@@ -19,7 +19,7 @@ import com.mygdx.gamepb6.skills.Skills;
 public abstract class Entity extends Sprite {
 	public enum State { STANDING, RUNNING, DEAD }
 	public PlayScreen screen;
-	private World world;
+	protected World world;
 	public int life;
 	public Gun gun;
 	public AnimationsPB animations;
@@ -49,6 +49,8 @@ public abstract class Entity extends Sprite {
 		setBounds(0, 0, 16 / MainGame.PPM, 16 / MainGame.PPM);
 		setRegion(animations.getPlayerStand());
 	}
+
+	
 
 	public void update(float dt){ 
 		setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
@@ -155,5 +157,21 @@ public abstract class Entity extends Sprite {
 	public void draw(Batch batch){
         super.draw(batch);
     }
+	
+	public float getSpawnX() {
+		return spawnX;
+	}
+
+	public void setSpawnX(float spawnX) {
+		this.spawnX = spawnX;
+	}
+
+	public float getSpawnY() {
+		return spawnY;
+	}
+
+	public void setSpawnY(float spawnY) {
+		this.spawnY = spawnY;
+	}
 
 }

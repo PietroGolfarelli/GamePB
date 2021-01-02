@@ -17,7 +17,7 @@ public class GraphicsPB implements Disposable {
     public Stage stage;
     private Viewport viewport;
 
-    //Mario score/time Tracking Variables
+    //user score/time Tracking Variables
     private Integer worldTimer;
     private boolean timeUp; // true when the world timer reaches 0
     private float timeCount;
@@ -32,14 +32,13 @@ public class GraphicsPB implements Disposable {
     private Label timeLabel;
     
    
-    private Label marioLabel;
+    private Label userLabel;
     
     private Label lifeLabel;
     private Label bulletsLabel;
     private Label nbulletsLabel;
     private Label messaggioLabel;
-    public static Label userLabel;
-    
+	
 
     public GraphicsPB(SpriteBatch sb, String username){
         //define our tracking variables
@@ -50,8 +49,8 @@ public class GraphicsPB implements Disposable {
         this.nBullets = 30;
         this.messaggio = "Benvenuto in GamePB6";
         
-        userLabel = new Label(username, new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-
+        
+       
         //setup the HUD viewport using a new camera seperate from our gamecam
         //define our stage using that viewport and our games spritebatch
         viewport = new FitViewport(MainGame.V_WIDTH, MainGame.V_HEIGHT, new OrthographicCamera());
@@ -61,10 +60,14 @@ public class GraphicsPB implements Disposable {
 
         //define a table used to organize our hud's labels
         Table table = new Table();
+      
+        
         //Top-Align table
         table.top();
+    
         //make the table fill the entire stage
         table.setFillParent(true);
+       
 
         //define our labels using the String, and a Label style consisting of a font and color
         //countdownLabel = new Label(String.format("%03d", worldTimer), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
@@ -74,13 +77,15 @@ public class GraphicsPB implements Disposable {
         timeLabel = new Label("LIFE", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         nbulletsLabel = new Label(String.format("%03d", nBullets), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         bulletsLabel = new Label("BULLETS", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        marioLabel = new Label(username, new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        userLabel = new Label(username, new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         
 
         //add our labels to our table, padding the top, and giving them all equal width with expandX
-        table.add(marioLabel).expandX().padTop(10);
+       
+        table.add(userLabel).expandX().padTop(10);
         table.add(bulletsLabel).expandX().padTop(10);
         table.add(timeLabel).expandX().padTop(10);
+        
         //add a second row to our table
         table.row();
         table.add(messaggioLabel).expandX();
@@ -90,8 +95,6 @@ public class GraphicsPB implements Disposable {
         
         //add our table to the stage
         stage.addActor(table);
-       
-
     }
 
 
@@ -99,6 +102,7 @@ public class GraphicsPB implements Disposable {
 		lifeLabel.setText(String.format("%03d", life));
 		nbulletsLabel.setText(String.format("%03d", nBullets));
 		messaggioLabel.setText(messaggio);
+		
     }
 
     public void setMessaggio(String messaggio){

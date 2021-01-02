@@ -40,7 +40,6 @@ public class Gun {
 	
 	public boolean zeroBullets() {
 		if (getNumeroBullets() == 0) {
-			System.out.println("Hai finito i bullet");
 			this.zeroBullets = true;
 		}
 		return zeroBullets;
