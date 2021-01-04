@@ -9,13 +9,24 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.mygdx.gamepb6.MainGame;
 import com.mygdx.gamepb6.screens.PlayScreen;
 
+/**
+ * Sottoclasse della classe Bullet che definisce il proiettile più grande dimensionalmente e il suo comportamento.
+ *  Vengono dichiarati campi relativi all'immagine del proiettile e alla durata della vita del proiettile.
+ *	
+ * @author Zanni Davide
+ * @author Golfarelli Pietro
+ */
 public class SuperBullet extends Bullet{
-
 	private int lifetime = 60;
 	private TextureRegion img;
-	
+
 	public boolean vivo;
 
+	/**
+	 * Costruttore che definisce le risorse del sistema utili per la creazione dell'oggetto. 
+	 * Viene definita l'immagine e la grandezza superiore rispetto al proiettile standard e viene chiamato il metodo 
+	 * per la definizione del corpo del proiettile.
+	 */
 	public SuperBullet(PlayScreen screen, float x, float y, int dirx, int diry) {
 		super(screen, x, y, dirx, diry);
 		this.vivo = true;
@@ -43,7 +54,7 @@ public class SuperBullet extends Bullet{
 			}
 		}		
 	}
-	
+
 	@Override
 	public void draw(Batch batch) {
 		if(this.vivo==true)

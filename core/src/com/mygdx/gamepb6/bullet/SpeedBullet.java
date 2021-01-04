@@ -9,13 +9,25 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.mygdx.gamepb6.MainGame;
 import com.mygdx.gamepb6.screens.PlayScreen;
 
-public class SpeedBullet extends Bullet{
-	
+/**
+ * Sottoclasse della classe Bullet che definisce il proiettile piu veloce rispetto al proiettile standard e il suo comportamento.
+ * Vengono dichiarati campi relativi all'immagine del proiettile e alla durata della vita del proiettile.
+ *
+ *
+ * @author Golfarelli Pietro
+ * @author Zanni Davide
+ */
+public class SpeedBullet extends Bullet{	
+
 	private int lifetime = 60;
 	private TextureRegion img;
 
 	public boolean vivo;
 
+	/**
+	 * Costruttore che definisce le risorse del sistema utili per la creazione dell'oggetto. 
+	 * Viene definita l'immagine e la propria grandezza e viene chiamato il metodo per la definizione del corpo del proiettile.
+	 */
 	public SpeedBullet(PlayScreen screen, float x, float y, int dirx, int diry) {
 		super(screen, x, y, dirx, diry);
 		this.vivo = true;
@@ -52,6 +64,9 @@ public class SpeedBullet extends Bullet{
 	}
 
 	@Override
+	/**
+	 * Nella gestione della direzione e dalla velocita viene incrementato il valore di quest ultimo per rendere il proiettile più veloce
+	 */
 	public void defineBullet() {
 		BodyDef bdef = new BodyDef();
 		bdef.position.set(x,y);

@@ -13,68 +13,85 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.gamepb6.MainGame;
-import com.mygdx.gamepb6.screens.PlayScreen;
 
+/**
+ * GameOver è una classe utilizzata per la fine del game quando uno dei due player perde la partita, nel quale compare un messaggio centrale 
+ * di sconfitta.
+ * Vengono dichiarati i campi per la gestione dello schermo
+ *
+ * @author Zanni Davide
+ * @author Golfarelli Pietro
+ *
+ */
 public class GameOver implements Screen {
-    private Viewport viewport;
-    private Stage stage;
-   // private Game game;
+	
+	private Viewport viewport;
+	private Stage stage;
 	private Game game;
 
-    public GameOver(Game game, PlayScreen screen ){
-        this.game = game;
-        //viewport = new FitViewport(MainGame.V_WIDTH / MainGame.PPM, MainGame.V_HEIGHT / MainGame.PPM, screen.getGamecam());
-        viewport = new FitViewport(MainGame.V_WIDTH, MainGame.V_HEIGHT, new OrthographicCamera());
-        stage = new Stage(viewport, screen.game.batch);
+	/**
+	 * Costruttore che definisce le risorse del sistema utili per la creazione dell'oggetto.
+	 *  Costruttore che setta i valori e crea gli oggetti relativi e alla camera di gioco.
+	 *      
+	 */
+	public GameOver(Game game, PlayScreen screen ){
 
-        //Label.LabelStyle font = new Label.LabelStyle(new BitmapFont(), Color.WHITE);
+		this.game = game;
 
-        Table table = new Table();
-        table.center();
-        table.setFillParent(true);
+		viewport = new FitViewport(MainGame.V_WIDTH, MainGame.V_HEIGHT, new OrthographicCamera());
+		stage = new Stage(viewport, screen.game.batch);
 
-//        Label gameOverLabel = new Label("GAME OVER", font);
-        Label gameOverLabel = new Label("GAME OVER", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        table.add(gameOverLabel).expandX();
-        table.row();
-        
-        stage.addActor(table);
-    }
+		Table table = new Table();
+		table.center();
+		table.setFillParent(true);
 
-    @Override
-    public void show() {
+		Label gameOverLabel = new Label("GAME OVER", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+		table.add(gameOverLabel).expandX();
+		table.row();
 
-    }
+		stage.addActor(table);
+	}
 
-    @Override
-    public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        stage.draw();
-    }
+	@Override
+	public void show() {
 
-    @Override
-    public void resize(int width, int height) {
+	}
 
-    }
+	@Override
+	/*
+	 * Metodo che costantemente aggiorna lo schermo rendendolo nero e disegnando il messaggio contenuto nello stage 
+	 */
+	public void render(float delta) {
+		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		stage.draw();
+	}
 
-    @Override
-    public void pause() {
+	@Override
+	public void resize(int width, int height) {
 
-    }
+	}
 
-    @Override
-    public void resume() {
+	@Override
+	public void pause() {
 
-    }
+	}
 
-    @Override
-    public void hide() {
+	@Override
+	public void resume() {
 
-    }
+	}
 
-    @Override
-    public void dispose() {
-        stage.dispose();
-    }
+	@Override
+	public void hide() {
+
+	}
+
+	@Override
+	/*
+	 *  libera le risorse video native usate dalla frame e dai suoi componenti
+	 */
+	public void dispose() {
+		stage.dispose();
+	}
 }

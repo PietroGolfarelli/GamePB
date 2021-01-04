@@ -9,6 +9,13 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.mygdx.gamepb6.MainGame;
 import com.mygdx.gamepb6.screens.PlayScreen;
 
+/**
+ * Sottoclasse della classe Bullet che definisce il proiettile standard e il suo comportamneto.
+ * Vengono dichiarati campi relativi all'immagine del proiettile e alla durata della vita del proiettile.
+ *
+ * @author Zanni Davide
+ * @author Golfarelli Pietro
+ */
 public class NormalBullet extends Bullet{
 
 
@@ -17,10 +24,14 @@ public class NormalBullet extends Bullet{
 
 	public boolean vivo;
 
+	/**
+	 * Costruttore che definisce le risorse del sistema utili per la creazione dell'oggetto. 
+	 * Viene definita l'immagine e la propria grandezza e viene chiamato il metodo per la definizione del corpo del proiettile
+	 */
 	public NormalBullet(PlayScreen screen, float x, float y, int dirx, int diry) {
 		super(screen, x, y, dirx, diry);
 		this.vivo=true;
-		
+
 		defineBullet();
 		setBounds(0, 0, 16 / MainGame.PPM, 16 / MainGame.PPM);
 		img = new TextureRegion(super.screen.atlasB.findRegions("slime/left").get(0), 0, 4, 16, 16);

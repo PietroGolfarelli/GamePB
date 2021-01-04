@@ -1,34 +1,42 @@
 package com.mygdx.gamepb6.screens;
 
-
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.CircleMapObject;
 import com.badlogic.gdx.maps.objects.EllipseMapObject;
-import com.badlogic.gdx.maps.objects.PolylineMapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Ellipse;
-import com.badlogic.gdx.math.Polyline;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.utils.Array;
 import com.mygdx.gamepb6.MainGame;
 
+/**
+ * 
+ * 
+ * B2WorldCreator è una classe che permette la definizioni delle immagini definite come dure in oggetti con contorni, utili in altre classi
+ * per definire le collisioni.
+ * Esamina ogni oggetto all'interno della mappa e ne costruisce dei bordi seguendo figure geometriche già note come rettangoli,cerchi o ellissi 
+ * 
+ * @author Zanni Davide 
+ * @author Golfarelli Pietro 
+ *
+ */
 public class B2WorldCreator {
-    
+	
+	/**
+	 * Costruttore che definisce le risorse del sistema utili per la creazione dell'oggetto. 
+	 * Riconosce oggetti definiti come duri o come casse e esaminando le caratteristiche setta intorno a ognuno dei contorni. 
+	 * Vengono confrontati con le forme geometriche del rettangolo,cerchio e ellisse.
+	 */
     public B2WorldCreator(PlayScreen screen){
         World world = screen.getWorld();
         TiledMap map = screen.getMap();
-        //create body and fixture variables
         BodyDef bdef = new BodyDef();
         PolygonShape shape = new PolygonShape();
         CircleShape cshape= new CircleShape();
@@ -37,7 +45,6 @@ public class B2WorldCreator {
         FixtureDef fdef = new FixtureDef();
         Body body;
 
-        //create ground bodies/fixtures
         for(MapObject object : map.getLayers().get("OggettiDuri").getObjects().getByType(RectangleMapObject.class)){
             Rectangle rect = ((RectangleMapObject) object).getRectangle();
 
@@ -73,10 +80,7 @@ public class B2WorldCreator {
             bdef.position.set((ellips.x + ellips.width/2 ) / MainGame.PPM, (ellips.y + ellips.height/2) / MainGame.PPM);
 
             body = world.createBody(bdef);
-
-            //shape.setAsBox(ellips.width/2 / MainGame.PPM, ellips.height/2 / MainGame.PPM);
             
-            //shape.setRadius(ellips.width/MainGame.PPM);
             cshape.setRadius(ellips.width/(2*MainGame.PPM));
             fdef.shape = cshape;
             body.createFixture(fdef).setUserData("OggettiDuri");
@@ -146,61 +150,6 @@ public class B2WorldCreator {
             fdef.shape = shape;
             body.createFixture(fdef).setUserData("Cassa5");
         }
-        
-        
-        /*
-        for(MapObject object : map.getLayers().get("OggettiDuri").getObjects().getByType(PolylineMapObject.class)){
-        	Polyline polylineObject = ((PolylineMapObject) object).getPolyline();
-        	
-            float[] vertices = polylineObject.getTransformedVertices();
-            Vector2[] worldVertices = new Vector2[vertices.length / 2];
-
-            for (int i = 0; i < vertices.length / 2; ++i) {
-                worldVertices[i] = new Vector2();
-                worldVertices[i].x = vertices[i * 2] / MainGame.PPM;
-                worldVertices[i].y = vertices[i * 2 + 1] / MainGame.PPM;
-            }
-
-            ChainShape chain = new ChainShape(); 
-            chain.createChain(worldVertices);
-           
-            bdef.type = BodyType.StaticBody;
-            body = world.createBody(bdef);
-            fdef.shape=chain;
-            body.createFixture(fdef).setUserData("OggettoDuro");
-            //body.setUserData(body);
-           
-        }
-        
-        for(MapObject object : map.getLayers().get("Cassa").getObjects().getByType(RectangleMapObject.class)){
-            Rectangle rect = ((RectangleMapObject) object).getRectangle();
-
-            bdef.type = BodyDef.BodyType.StaticBody;
-            bdef.position.set((rect.getX() + rect.getWidth() / 2) / MainGame.PPM, (rect.getY() + rect.getHeight() / 2) / MainGame.PPM);
-
-            body = world.createBody(bdef);
-
-            shape.setAsBox(rect.getWidth() / 2 / MainGame.PPM, rect.getHeight() / 2 / MainGame.PPM);
-            fdef.shape = shape;
-            body.createFixture(fdef).setUserData("Cassa");
-            
-        }
-*/
-        /*create pipe bodies/fixtures
-        for(MapObject object : map.getLayers().get(3).getObjects().getByType(RectangleMapObject.class)){
-            Rectangle rect = ((RectangleMapObject) object).getRectangle();
-
-            bdef.type = BodyDef.BodyType.StaticBody;
-            bdef.position.set((rect.getX() + rect.getWidth() / 2) / MainGame.PPM, (rect.getY() + rect.getHeight() / 2) / MainGame.PPM);
-
-            body = world.createBody(bdef);
-
-            shape.setAsBox(rect.getWidth() / 2 / MainGame.PPM, rect.getHeight() / 2 / MainGame.PPM);
-            fdef.shape = shape;
-            fdef.filter.categoryBits = MainGame.OBJECT_BIT;
-            body.createFixture(fdef);
-        }
-        */
                 
     }
 }

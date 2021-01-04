@@ -12,104 +12,87 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.gamepb6.MainGame;
 
+/**
+ * 
+ * GraphicsPB è una classe che permette la gestione dell'interfaccia e di tutte le componenti che lo compongono. 
+ * Implementa la classe Java Disposable, classe per l'utilizzo delle risorse dello schermo.
+ * Vengono dichiarate tutte le componenti utili alla creazione dell'interfaccia e tutte le variabili utili all corretto funzionamneto 
+ * delle componenti
+ *  
+ * @author Zanni Davide 
+ * @author Golfarelli Pietro
+ * 
+ */
 public class GraphicsPB implements Disposable {
-	//Scene2D.ui Stage and its own Viewport for HUD
-    public Stage stage;
-    private Viewport viewport;
 
-    //user score/time Tracking Variables
-    private Integer worldTimer;
-    private boolean timeUp; // true when the world timer reaches 0
-    private float timeCount;
-    private static Integer score;
-    private int life;
-    private int nBullets;
-    private String messaggio;
-
-   
-	//Scene2D widgets
-    private Label countdownLabel;
-    private Label timeLabel;
-    
-   
-    private Label userLabel;
-    
-    private Label lifeLabel;
-    private Label bulletsLabel;
-    private Label nbulletsLabel;
-    private Label messaggioLabel;
-	
-
-    public GraphicsPB(SpriteBatch sb, String username){
-        //define our tracking variables
-        worldTimer = 300;
-        timeCount = 0;
-        score = 0;
-        this.life = 100;
-        this.nBullets = 30;
-        this.messaggio = "Benvenuto in GamePB6";
-        
-        
-       
-        //setup the HUD viewport using a new camera seperate from our gamecam
-        //define our stage using that viewport and our games spritebatch
-        viewport = new FitViewport(MainGame.V_WIDTH, MainGame.V_HEIGHT, new OrthographicCamera());
-        //viewport = new ScalingViewport(Scaling.fill,MainGame.V_WIDTH / MainGame.PPM, MainGame.V_HEIGHT / MainGame.PPM, new OrthographicCamera());
-        
-        stage = new Stage(viewport, sb);
-
-        //define a table used to organize our hud's labels
-        Table table = new Table();
-      
-        
-        //Top-Align table
-        table.top();
-    
-        //make the table fill the entire stage
-        table.setFillParent(true);
-       
-
-        //define our labels using the String, and a Label style consisting of a font and color
-        //countdownLabel = new Label(String.format("%03d", worldTimer), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        lifeLabel = new Label(String.format("%03d", life), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        messaggioLabel =new Label(messaggio, new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        //timeLabel = new Label("TIME", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        timeLabel = new Label("LIFE", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        nbulletsLabel = new Label(String.format("%03d", nBullets), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        bulletsLabel = new Label("BULLETS", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        userLabel = new Label(username, new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        
-
-        //add our labels to our table, padding the top, and giving them all equal width with expandX
-       
-        table.add(userLabel).expandX().padTop(10);
-        table.add(bulletsLabel).expandX().padTop(10);
-        table.add(timeLabel).expandX().padTop(10);
-        
-        //add a second row to our table
-        table.row();
-        table.add(messaggioLabel).expandX();
-        table.add(nbulletsLabel).expandX();
-        table.add(lifeLabel).expandX();
-       
-        
-        //add our table to the stage
-        stage.addActor(table);
-    }
+	public Stage stage;
+	private Viewport viewport;
+	private boolean timeUp; 
+	private int life;
+	private int nBullets;
+	private String messaggio;
+	private Label timeLabel; 
+	private Label userLabel;
+	private Label lifeLabel;
+	private Label bulletsLabel;
+	private Label nbulletsLabel;
+	private Label messaggioLabel;
 
 
+	/**
+	 * Costruttore che setta i valori e crea gli oggetti relativi al tavolo dell'interfaccia, destinato a contenere le label 
+	 * e alla camera di gioco.    
+	 * Vengono creati tutti i Label con le rispettive caratteristiche di messaggio, tipo di font e colore.
+	 */
+	public GraphicsPB(SpriteBatch sb, String username){
+		this.life = 100;
+		this.nBullets = 30;
+		this.messaggio = "Benvenuto in GamePB6";
+
+		viewport = new FitViewport(MainGame.V_WIDTH, MainGame.V_HEIGHT, new OrthographicCamera());
+
+		stage = new Stage(viewport, sb);
+		Table table = new Table();
+
+		table.top();
+
+		table.setFillParent(true);
+
+		lifeLabel = new Label(String.format("%03d", life), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+		messaggioLabel =new Label(messaggio, new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+		timeLabel = new Label("LIFE", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+		nbulletsLabel = new Label(String.format("%03d", nBullets), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+		bulletsLabel = new Label("BULLETS", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+		userLabel = new Label(username, new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+
+		table.add(userLabel).expandX().padTop(10);
+		table.add(bulletsLabel).expandX().padTop(10);
+		table.add(timeLabel).expandX().padTop(10);
+
+		table.row();
+		table.add(messaggioLabel).expandX();
+		table.add(nbulletsLabel).expandX();
+		table.add(lifeLabel).expandX();
+
+		stage.addActor(table);
+	}
+
+
+	/**
+	 * Metodo che aggiorna costantemente i valori mostrati dalle label life e nbullets 
+	 */
 	public void update(float dt){	
 		lifeLabel.setText(String.format("%03d", life));
 		nbulletsLabel.setText(String.format("%03d", nBullets));
 		messaggioLabel.setText(messaggio);
-		
-    }
 
-    public void setMessaggio(String messaggio){
-    	this.messaggio = messaggio;
-        messaggioLabel.setText(messaggio);
-    }
-    
+	}
+
+	public void setMessaggio(String messaggio){
+		this.messaggio = messaggio;
+		messaggioLabel.setText(messaggio);
+	}
+
 
 	public int getLife() {
 		return life;
@@ -118,7 +101,7 @@ public class GraphicsPB implements Disposable {
 	public void setLife(int life) {
 		this.life = life;
 	}
-    
+
 	public int getnBullets() {
 		return nBullets;
 	}
@@ -128,9 +111,16 @@ public class GraphicsPB implements Disposable {
 		this.nBullets = nBullets;
 	}
 
-    
-    @Override
-    public void dispose() { stage.dispose(); }
 
-    public boolean isTimeUp() { return timeUp; }
+	@Override
+	/*
+	 *  libera le risorse video native usate dalla frame e dai suoi componenti
+	 */
+	public void dispose() {
+		stage.dispose();
+	}
+
+	public boolean isTimeUp() {
+		return timeUp; 
+	}
 }
