@@ -2,14 +2,27 @@ package com.mygdx.gamepb6.skills;
 
 import com.mygdx.gamepb6.entities.Player;
 
+/**
+ * 
+ * PlayerSkills permette ad un Player di utilizzare delle skill se queste vengono attivate cliccando la barra spaziatrice
+ * in prossimità delle Casse sulla mappa di gioco. Estende Skill e il suo comportamento è in gran parte simile alla suddetta
+ * classe, la differenza sostanziale sta nell'aggiornamento dell'elemento di grafica Hud che può avvenire solo da parte 
+ * di un Player.
+ *
+ */
 public class PlayerSkills extends Skills{
 
 	private Player player;
-
+	
+	/**
+	 * 
+	 * @param player 	Player a cui voglio assegnare questa gestione dellle skill
+	 */
 	public PlayerSkills(Player player) {
 		super(player);
 		this.player = player;
 	}
+	
 	
 	@Override
 	public void skillType(int skillType) {

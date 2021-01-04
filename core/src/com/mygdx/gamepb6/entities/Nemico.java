@@ -5,16 +5,30 @@ import com.mygdx.gamepb6.input.NemicoHandleInput;
 import com.mygdx.gamepb6.screens.PlayScreen;
 import com.mygdx.gamepb6.skills.Skills;
 
-public class Nemico extends Entity{
 
+/**
+ * Nemico è l'oggetto controllato dal giocatore avversario. La definizione del suo body e delle sue animazioni è
+ * gestita dalla classe Entity che questa classe estende. Nemico inizializza NemicoHandleInput in modo da potersi
+ * muovere, Gun in modo da poter sparare i Bullet e NemicoSkills per attivare eventuali abilità.
+ */
+public class Nemico extends Entity{
+	
 	public String username;
+	@SuppressWarnings("unused")
 	private float startX;
+	@SuppressWarnings("unused")
 	private float startY;
 	private NemicoHandleInput input;
 	public Skills skills;
 	private boolean vabene;
 	private static String type = "Nemico";
-
+	
+	/**
+	 * @param screen	schermo che contiene la mappa di gioco
+	 * @param username	nome scelto dal giocatore avversario
+	 * @param startX	coordianata x di creazione comunicata dal GameServer
+	 * @param startY	coordianata y di creazione comunicata dal GameServer
+	 */
 	public Nemico(PlayScreen screen, String username, float startX, float startY) {
 		super(screen, startX, startY, type);
 		this.username = username;
@@ -45,6 +59,10 @@ public class Nemico extends Entity{
 		this.vabene = vabene;
 	}
 	
+	/**
+	 * Questo metodo è necessario in modo da poter rimediare ad una posizione 
+	 * sbagliata del Nemico distruggendolo e ridefinirlo nella posizione corretta.
+	 */
     public void redefine(){
         super.world.destroyBody(b2body);
         defineplayer();

@@ -20,14 +20,20 @@ import com.mygdx.gamepb6.net.packets.Packet05ServerAnswer;
 import com.mygdx.gamepb6.net.packets.Packet.PacketTypes;
 import com.mygdx.gamepb6.entities.Nemico;
 
-
+/**
+ * La classe GameClient rappresenta il Client del giocatore : la sua funzionalità è quella di 
+ * permettere al giocatore di connettersi al GameServer e giocare insieme ad altri giocatori. 
+ * Molti dei metodi contenuti all'interno della classe mirano alla gestione 
+ * dei pacchetti che vengono ricevuti dal server attraverso una connessione socket. 
+ * Questi pacchetti vengono riconosciuti, smistati e infine gestiti dagli specifici metodi.
+ */
 public class GameClient extends Thread {
 
     private InetAddress ipAddress;
     private DatagramSocket socket;
     private MainGame game;
 
-
+    
     public GameClient(MainGame game, String ipAddress) {
         this.game = game;
         try {
@@ -54,7 +60,13 @@ public class GameClient extends Thread {
         }
     }
 
-    
+    /**
+     * Questo metodo ha l'obbiettivo di smistare i pacchetti che vengono ricevuti dal GameClient
+	 * in modo da poterli indirizzare al metodo che potrà gestirli correttamente.
+     * @param data		byte che rappresentano i dati
+     * @param address	IPaddress con cui il Client comunica con il server
+	 * @param port		porta con cui il Client comunica con il server
+     */
     private void parsePacket(byte[] data, InetAddress address, int port) {
         String message = new String(data).trim();
         PacketTypes type = Packet.lookupPacket(message.substring(0, 2));
@@ -71,9 +83,6 @@ public class GameClient extends Thread {
             packet = new Packet01Disconnect(data);
             System.out.println("[" + address.getHostAddress() + ":" + port + "] "
                     + ((Packet01Disconnect) packet).getUsername() + " has left the world...");
-            /*if (game.playscreen != null) {
-            game.playscreen.getHud().setMessaggio("[" + address.getHostAddress() + ":" + port + "] "
-                    + ((Packet01Disconnect) packet).getUsername() + " has left the world...");}*/
             game.playscreen.removeEntityMP(((Packet01Disconnect) packet).getUsername());
             break;
         case MOVE:
@@ -94,14 +103,16 @@ public class GameClient extends Thread {
         }
     }
 
-    
+    /**
+     * Questo metodo gestisce la risposta ricevuta dal server che indica la corretta connessione con
+     * il GameServer. Solo una volta che la connessione è corretta viene avviato il gioco.
+     * @param packet	Packet05ServerAnswer
+     */
 	private void handleServerAnswer(Packet05ServerAnswer packet) {
 		game.setAnswer(true);
 		System.out.println("è arrivata la risposa dal server");
 		game.playscreen.setUsername(packet.getUsername());
 		game.playscreen.connesso(packet.getSpawnX(), packet.getSpawnY());
-		//game.loadGame();
-		//game.loadGame(true);
 	}
 
 
@@ -115,34 +126,42 @@ public class GameClient extends Thread {
           }
     }
     
-    
+    /**
+     * Questo metodo gestisce il login di un nuovo giocatore al GameServer. Viene quindi creato all'interno del gioco
+     * il Nemico che riceverà i comandi da remoto.
+     * @param packet	Packet00Login del nuovo giocatore connesso 
+     * @param address	IPaddress nuovo Client
+	 * @param port		porta del nuovo Client
+     */
     private void handleLogin(Packet00Login packet, InetAddress address, int port) {
     	 System.out.println("[" + address.getHostAddress() + ":" + port + "] " 
         		+ packet.getUsername() + " has joined the game...");
-    	
-    	 /*Nemico nemico = new Nemico(game.playscreen, packet.getUsername(), 
-        		address , port, packet.getX(), packet.getY());
-        
-        game.playscreen.addNemico(nemico);
-    	if (game.playscreen != null) {game.playscreen.getHud().setMessaggio("[" + address.getHostAddress() + ":" + port + "] " 
-        		+ packet.getUsername() + " has joined the game...");}*/
-        
         game.playscreen.nuovoNemico(packet);
     }
 
-
+    /**
+     * Questo metodo gestisce il movimento controllato da remoto di un Nemico all'interno del gioco.
+     * @param packet	Packet02Move del giocatore avversario
+     */
     private void handleMove(Packet02Move packet) {
-    	//    	System.out.println(packet.getUsername() + game.playscreen.getUsername());
-
     	game.playscreen.movePlayers(packet.getUsername(), packet.getX(), 
     			packet.getY(), packet.getPosX(), packet.getPosY());
 
     }
 
+    /**
+     * Questo metodo gestisce lo sparare controllato da remoto di un Nemico all'interno del gioco. 
+     * @param packet	Packet03Bullet 
+     */
     private void handleBullet(Packet03Bullet packet) {
     	game.playscreen.firePlayers(packet.getUsername(), packet.getDirx(), packet.getDiry());
 	}
     
+    /**
+     * Questo metodo gestisce Packet04LifeSkill assegnati ad un Nemico. Indica la perdita di vita del nemico
+     * o l'attivazione di una skill.
+     * @param packet	Packet04LifeSkill
+     */
     private void handleLifeSkill(Packet04LifeSkill packet) {
     	game.playscreen.nemicoLifeSkill(packet.getUsername(), packet.getCode());
 		

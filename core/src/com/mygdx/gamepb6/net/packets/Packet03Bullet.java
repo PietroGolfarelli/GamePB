@@ -3,6 +3,11 @@ package com.mygdx.gamepb6.net.packets;
 import com.mygdx.gamepb6.net.GameClient;
 import com.mygdx.gamepb6.net.GameServer;
 
+/**
+* Packet03Bullet viene utilizzato per indicare un Client che spara un Bullet. 
+* Implementa tutti i metodi gia descritti nella classe astratta Packet.
+* @see Packet
+*/
 public class Packet03Bullet extends Packet {
 	private String username;
     private int dirx, diry;

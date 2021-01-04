@@ -16,6 +16,10 @@ import com.mygdx.gamepb6.graphics.AnimationsPB;
 import com.mygdx.gamepb6.screens.PlayScreen;
 import com.mygdx.gamepb6.skills.Skills;
 
+/**
+ * Entity è la classe astratta che pone la base per il nostro Player e i nostri Nemici.
+ * Principalmente crea il body grazie a cui posso avere collissioni e posso muovermi all'interno del gioco.
+ */
 public abstract class Entity extends Sprite {
 	public enum State { STANDING, RUNNING, DEAD }
 	public PlayScreen screen;
@@ -31,7 +35,8 @@ public abstract class Entity extends Sprite {
 	private float spawnX;
 	private float spawnY;
 	public String type;
-
+	
+	
 	public Entity(PlayScreen screen, float spawnX, float spawnY, String type){
 		this.screen = screen;
 		this.world = screen.getWorld();  	
@@ -51,15 +56,22 @@ public abstract class Entity extends Sprite {
 	}
 
 	
-
+	/**
+	 * Aggiorno la posizione di Entity in base agli impulsi applicati sul body.
+	 * Aggiorno anche l'animazione in base al tipo di movimento che l'Entity sta svolgendo.
+	 * @param dt	tempo dettato dal render del gioco
+	 */
 	public void update(float dt){ 
 		setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
 		setRegion(getFrame(dt));
 	}
-
+	
+	/**
+	 * Creo il body che rappresenterà Entity e ne permettera la collissione con i vari oggetti della mappa.
+	 * Ne definisco le dimensioni e la posizione dove viene creato (spawn ricevuto dal GameServer)
+	 */
 	public void defineplayer(){
 		BodyDef bdef = new BodyDef();
-		//        bdef.position.set(32 / MainGame.PPM, 32 / MainGame.PPM);
 		bdef.position.set(spawnX, spawnY);
 
 		bdef.type = BodyDef.BodyType.DynamicBody;
@@ -81,6 +93,12 @@ public abstract class Entity extends Sprite {
 
 	}
 	
+	/**
+	 * Ricavo il frame dalla classe Animazione che è necessario per aggiornare e visualizzare 
+	 * in maniera corretta Entity.
+	 * @param dt	tempo dettato dal render del gioco
+	 * @return		frame adatto allo stato in cui si trova Entity
+	 */
 	public TextureRegion getFrame(float dt){
 		currentState = getState();
 		TextureRegion region = null;
@@ -115,7 +133,11 @@ public abstract class Entity extends Sprite {
 		return region;
 	}
 	
-	
+	/**
+	 * Se Entity ha finito la vita ritornerà lo stato Dead.
+	 * Se Entity si sta muovendo ritornerà lo stato Running, altrimenti se Entity è fermo ritornerà lo stato Standing.
+	 * @return	Stato in cui si trova l'Entity
+	 */
 	public State getState(){
 		if(isDead())
 			return State.DEAD;

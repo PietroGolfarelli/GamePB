@@ -4,6 +4,11 @@ package com.mygdx.gamepb6.net.packets;
 import com.mygdx.gamepb6.net.GameClient;
 import com.mygdx.gamepb6.net.GameServer;
 
+/**
+* Packet02Move viene utilizzato per indicare un un movimento di un giocatore. 
+* Implementa tutti i metodi gia descritti nella classe astratta Packet.
+* @see Packet
+*/
 public class Packet02Move extends Packet {
 
     private String username;

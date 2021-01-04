@@ -6,6 +6,11 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.mygdx.gamepb6.net.packets.Packet02Move;
 import com.mygdx.gamepb6.entities.Player;
 
+/**
+ * PlayerHandleInput gestisce gli input da tastiera del giocatore e ne associa gli impulsi applicati a Player 
+ * per permettegli il movimento attraverso la mappa di gioco. Inoltre gestisce anche gli input provenienti dalle Casse
+ * che attivano le skill.
+ */
 public class PlayerHandleInput {
 	private Body body;
 	private int posX;
@@ -13,6 +18,9 @@ public class PlayerHandleInput {
 	private boolean enableSkill;
 	private Player player;
 	
+	/**
+	 * @param player	Player a cui voglio assegnare la gestione degli input
+	 */
 	public PlayerHandleInput(Player player) {
 		this.player = player;
 		this.body = player.b2body;
@@ -46,7 +54,10 @@ public class PlayerHandleInput {
 		return Gdx.input.isKeyJustPressed(Input.Keys.SPACE);
 	}
 	
-	
+	/**
+	 * Questo metodo viene chiamato ogni volta che si esegue il render del gioco e controlla la presenza di input che 
+	 * può gestire.
+	 */
 	public void update() {
 		if(up()) {
 			this.body.setLinearVelocity(0f, 0.5f);

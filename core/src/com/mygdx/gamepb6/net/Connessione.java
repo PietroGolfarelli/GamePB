@@ -1,9 +1,13 @@
 package com.mygdx.gamepb6.net;
 
 import java.net.InetAddress;
-
 import com.mygdx.gamepb6.MainGame;
 
+
+/**
+ * Questa classe contiene tutti i dati di un Client che si connette al GameServer, è anche utilizzata per mantenere
+ * aggiornata la posizione del giocatore controllata del Client che rappresenta.
+ */
 public class Connessione {
 	public InetAddress ipAddress;
     int port;
@@ -11,7 +15,12 @@ public class Connessione {
     float x;
     float y;
     MainGame game;
-   
+   /**
+    * @see GameServer
+    * @param username	username non duplicato (vedi GameServer) con cui il Client gioca
+    * @param ipAddress	IPaddress con cui si collega il Client a GameServer
+    * @param port		porta con cui si collega il Client a GameServer
+    */
 	public  Connessione(String username, InetAddress ipAddress, int port) {
     	this.username = username;
     	this.ipAddress = ipAddress;

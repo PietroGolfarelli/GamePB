@@ -12,7 +12,13 @@ import com.mygdx.gamepb6.net.packets.Packet01Disconnect;
 import com.mygdx.gamepb6.screens.GameOver;
 import com.mygdx.gamepb6.screens.PlayScreen;
 
-
+/**
+ * MainGame è il punto di inizio del gioco. Permette di inserire l'IP del server a cui ci si vuole collegare,
+ * lo username con cui ci si vuole identificare e fa partire la procedura di handshake con il GameServer.
+ * Inizializza tutte le caratteristiche generali del gioco (es. grandezza della finestra), il GameClient e gli screen 
+ * che utilizzeremo per giocare.
+ * 
+ */
 public class MainGame extends Game implements Runnable {
 	//Virtual Screen size and Box2D Scale(Pixels Per Meter)
 	public static final int V_WIDTH = 400;
@@ -30,40 +36,39 @@ public class MainGame extends Game implements Runnable {
     
     public Connessione conn;
     public GameClient socketClient;
-    //public GameServer socketServer;
     
     public boolean isApplet = false;
     boolean running;
     boolean isServerRunning;
 	private String username;
 	private boolean answer;
-	private int timer;
 	private String serverIP;
     
-	
+	/**
+	 * Crea tutti gli oggetti necessari per connettersi al GameServer e caricare il gioco.
+	 */
     @Override
     public void create() {
     	game=this;
     	batch = new SpriteBatch();
     	running = true;
     	
-        
         thread = new Thread(this, NAME + "_main");
         thread.start();
-        this.serverIP=JOptionPane.showInputDialog(this, "Please enter IP del server");
-        this.username=JOptionPane.showInputDialog(this, "Please enter a username");
+        this.serverIP=JOptionPane.showInputDialog("IP del server", "Please enter IP del server");
+        this.username=JOptionPane.showInputDialog("Username", "Please enter a username");
         playscreen= new PlayScreen(game, this.username);
         gameOver = new GameOver(game, playscreen);
         answer = false;
-        timer= 50000;
         loadGame();
         clientStart();
     	sendLogin();
-    	
 	}
     
+    /**
+     * Imposto come schermo la mappa di gioco creata nel metodo create()
+     */
     public void loadGame() {
-    	System.out.println("carico il gioco...");
     	setScreen(playscreen);	
     }
     
@@ -87,6 +92,9 @@ public class MainGame extends Game implements Runnable {
     	return this.answer;
     }
     
+    /**
+     * In caso il giocatore termini la vita viene visualizzato lo schermo gameOver
+     */
     public void died() {
     	disconnetti();
 		setScreen(gameOver);
@@ -103,6 +111,9 @@ public class MainGame extends Game implements Runnable {
         running = false;
     }
   
+    /**
+     * Alla chiusura della finestra dealloco gli oggetti instanziati in precedenza  disconnetto il client al GameServer
+     */
     @Override
     public void dispose() {	
         super.dispose();

@@ -5,8 +5,6 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.mygdx.gamepb6.MainGame;
 
 public class DesktopLauncher {
-	
-	
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		
@@ -15,7 +13,5 @@ public class DesktopLauncher {
 		config.resizable=false;
 		
 		new LwjglApplication(new MainGame(), config);
-	}
-		
-	
+	}	
 }

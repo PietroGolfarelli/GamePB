@@ -3,6 +3,12 @@ package com.mygdx.gamepb6.net.packets;
 import com.mygdx.gamepb6.net.GameClient;
 import com.mygdx.gamepb6.net.GameServer;
 
+/**
+ * Packet05ServerAnswer viene usato dal GameServer per confermare al Client la connessione e 
+ * gli comunica le coordinate di spawn del suo giocatore. 
+ * Implementa tutti i metodi gia descritti nella classe astratta Packet.
+ * @see Packet
+ */
 public class Packet05ServerAnswer extends Packet {
 	private int spawnX;
     private int spawnY;

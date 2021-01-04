@@ -19,8 +19,16 @@ import com.mygdx.gamepb6.net.packets.Packet04LifeSkill;
 import com.mygdx.gamepb6.net.packets.Packet05ServerAnswer;
 import com.mygdx.gamepb6.net.packets.Packet.PacketTypes;
 
-public class GameServer extends Thread implements Runnable, ApplicationListener {
 
+/**
+ * La classe GameServer rappresenta il server del gioco : la sua funzionalità è quella di 
+ * permettere ai vari client (giocatori) di connettersi da remoto e giocare insieme. 
+ * Di conseguenza molti dei metodi contenuti all'interno della classe mirano alla gestione 
+ * dei pacchetti inviati dai client attraverso una connessione socket. 
+ * Questi pacchetti vengono riconosciuti, smistati e infine gestiti dagli specifici metodi.
+ * 
+ */
+public class GameServer extends Thread implements Runnable, ApplicationListener {
 	private DatagramSocket socket;
 	@SuppressWarnings("unused")
 	private MainGame game;
@@ -29,14 +37,9 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 	private Thread thread;
 	private List<String> listUsername = new ArrayList<String>();
 	private String username;
-	/*private List<Integer> spawnX = new ArrayList<Integer>();
-	private List<Integer> spawnY = new ArrayList<Integer>();
-	*/
-	
-	int spawnX[] = {1, 1, 6, 6};
-	int spawnY[] = {1, 3, 3, 1};
-	
-	private int countgiocatori=0;
+	private int spawnX[] = {1, 1, 6, 6};
+	private int spawnY[] = {1, 3, 3, 1};
+	private int countgiocatori = 0;
 
 
 	public GameServer() {
@@ -46,15 +49,6 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 		} catch (SocketException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public boolean isRunning() {
-		return running;
-	}
-
-
-	public void setRunning(boolean running) {
-		this.running = running;
 	}
 
 
@@ -71,6 +65,14 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 		}
 	}
 
+	/**
+	 * Questo metodo ha l'obbiettivo di smistare i pacchetti che vengono ricevuti dal GameServer
+	 * in modo da poterli indirizzare al metodo che potrà gestirli correttamente.
+	 * 
+	 * @param data		byte di dati del pachetto ricevuto
+	 * @param address	IPaddress con cui il Client comunica con il server
+	 * @param port		porta con cui il Client comunica con il server
+	 */
 	private void parsePacket(byte[] data, InetAddress address, int port) {
 		String message = new String(data).trim();
 		PacketTypes type = Packet.lookupPacket(message.substring(0, 2));
@@ -81,12 +83,8 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 			break;
 		case LOGIN:
 			packet = new Packet00Login(data);
-			countgiocatori++;
-			if (countgiocatori > 4) {
-				countgiocatori = 1;
-			}
+			contaPlayers();
 			handleLogin((Packet00Login)packet, address, port);
-//			controlUsername(((Packet00Login) packet).getUsername());
 			break;
 		case DISCONNECT:
 			packet = new Packet01Disconnect(data);
@@ -109,6 +107,13 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 		}
 	}
 
+	public void contaPlayers() {
+		countgiocatori++;
+		if (countgiocatori > 4) {
+			countgiocatori = 1;
+		}
+	}
+
 	public void addConnection(Packet00Login packet, Connessione conn) {
 		sendToAllButSender(packet, conn);
 		for (Connessione p : playerConnessi) {
@@ -117,7 +122,7 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 		}
 		playerConnessi.add(conn);
 	}
-	
+
 
 	public void removeConnection(Packet01Disconnect packet) {
 		if (getEntityMP(packet.getUsername()) != null) {
@@ -136,8 +141,19 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 			break;
 		}
 	}
-	
 
+
+	/**
+	 *  Questo metodo ha il compito di gestire il login dei client quindi l'accesso dei nuovi giocatori.
+	 *  Questa classe svolge diversi compiti:
+	 * 	- istanzia un oggetto Connessione corrispondente al Client, in modo da poterlo riconoscere e gestire in futuro.
+	 * 	- manda un pacchetto di risposta al Client con posizione di spawn del giocatore
+	 * 	- comunica a tutti gli altri giocatori connessi (se presenti) la presenza di un nuovo giocatore
+	 * 		
+	 * @param packet	pacchetto di login arrivato al server
+	 * @param address	IPaddress del Client
+	 * @param port		porta del Client
+	 */
 	public void handleLogin(Packet00Login packet, InetAddress address, int port) {
 		String usernameCorretto = controlUsername(packet.getUsername());
 		packet.setUsername(usernameCorretto);
@@ -153,7 +169,13 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 		sendData(packet05.getData(), address, port);
 	}
 
-
+	/**
+	 * Questo metodo ha l'obbiettivo di gestire i pacchetti Packet04LifeSkill.
+	 * Il compito di questo metodo é quello di inoltrare a tutti i client connessi tranne al mittente il 
+	 * pacchetto Packet04LifeSkill
+	 * @see Packet04LifeSkill 
+	 * @param packet 	Packet04LifeSkill
+	 */
 	private void handleLifeSkill(Packet04LifeSkill packet) {
 		if (getEntityMP(packet.getUsername()) != null) {
 			int index = getEntityMPIndex(packet.getUsername());
@@ -161,8 +183,14 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 			sendToAllButSender(packet, conn);
 		}
 	}
-
- void handleBullet(Packet03Bullet packet) {
+	
+	/**
+	 * Questo metodo ha l'obbiettivo di gestire i pacchetti Packet03Bullet.
+	 * Il compito di questo metodo é quello di inoltrare a tutti i client connessi tranne al mittente il 
+	 * pacchetto Packet03Bullet
+	 * @param packet	Packet03Bullet
+	 */
+	void handleBullet(Packet03Bullet packet) {
 		if (getEntityMP(packet.getUsername()) != null) {
 			int index = getEntityMPIndex(packet.getUsername());
 			Connessione conn = this.playerConnessi.get(index);
@@ -170,7 +198,13 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 		}
 	}
 
-
+	/**
+	 * Questo metodo ha l'obbiettivo di gestire i pacchetti Packet02Move.
+	 * Il compito di questo metodo é quello di inoltrare a tutti i client connessi tranne al mittente il 
+	 * pacchetto Packet02Move e di aggiornare la Connessione del Client che si sta muovendo
+	 * @see updateConnessione
+	 * @param packet	Packet02Move 
+	 */
 	private void handleMove(Packet02Move packet) {
 		if (getEntityMP(packet.getUsername()) != null) {
 			int index = getEntityMPIndex(packet.getUsername());
@@ -180,6 +214,7 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 		}
 	}
 
+	
 	public void sendData(byte[] data, InetAddress ipAddress, int port) {
 		DatagramPacket packet = new DatagramPacket(data, data.length, ipAddress, port);
 		try {
@@ -210,6 +245,13 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 		return index;
 	}
 
+	/**
+	 * Questo metodo aggiorna le Connessioni utilizzando i pacchetti Packet02Move in questo modo
+	 * si avrà un posizione sempre aggiornata per lo spawn dei giocatori già presenti nel gioco alla connessione 
+	 * di un nuovo client
+	 * @param packet	Packet02Move
+	 * @param conn		Connessione riferita al Client che sta cambiando posizione
+	 */
 	private void updateConnessione(Packet02Move packet, Connessione conn) {
 		conn.setX(packet.getPosX());
 		conn.setY(packet.getPosY());
@@ -227,19 +269,17 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 			sendData(data, p.ipAddress, p.port);
 		}
 	}
-
+	
+	/**
+	 * Questo metodo controlla e in caso corregge gli username in modo che non si creino duplicati e non ci siano problemi
+	 * nel riconoscere il client corretto.
+	 * @param username		username con cui il client vuole connettersi al gioco
+	 * @return				stringa con lo username non duplicato
+	 */
 	public String controlUsername(String username){
-		/*for(String name:listUsername) {
-			if(username==name) {
-				newUsername(username);
-				addUsername(username);		
-			}
-			else
-				addUsername(username);
-		}*/
 		String newusername;
 		boolean univoco = true;
-		
+
 		for (Connessione c : playerConnessi) {
 			if (c.getUsername().equals(username)) {
 				univoco = false;
@@ -250,27 +290,30 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 			newusername = newUsername(username);
 		else 
 			newusername = username;
-		
 		return newusername;
-
 	}
-
+	
+	/**
+	 * Modifica la stringa in input e controlla che non sia uno username già esistente.
+	 * @param username	stringa in input da modificare
+	 * @return			username modificato
+	 */
+	public String newUsername(String username) {
+		String newusername;
+		newusername = username+"1";
+		newusername = controlUsername(newusername);
+		return newusername;
+	}
+	
 	public void addUsername(String username) {
 		listUsername.add(username);
-
 	}
 
 	public String getUsername() {
 		return username;
 	}
 
-	public String newUsername(String username) {
-		String newusername;
-		newusername = username+"1";
-		newusername = controlUsername(newusername);
-		return newusername;
-		//return newusername;
-	}
+	
 
 	public int getSpawnX() {
 		return spawnX[countgiocatori - 1];
@@ -280,9 +323,15 @@ public class GameServer extends Thread implements Runnable, ApplicationListener 
 	public int getSpawnY() {
 		return spawnY[countgiocatori - 1];
 	}
-	 
 
-	
+	public boolean isRunning() {
+		return running;
+	}
+
+
+	public void setRunning(boolean running) {
+		this.running = running;
+	}
 
 	@Override
 	public void create() {

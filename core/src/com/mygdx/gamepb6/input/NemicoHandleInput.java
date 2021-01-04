@@ -5,6 +5,11 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.mygdx.gamepb6.entities.Nemico;
 
+/**
+ * NemicoHandleInput gestisce gli input del del giocatore avversario che vengono ricevuti grazie a Packet02Move e ne associa gli impulsi applicati a Nemico 
+ * per permettegli il movimento attraverso la mappa di gioco. Inoltre gestisce anche gli input provenienti dai pacchetti Packet04LifeSkill
+ * che attivano le skill.
+ */
 public class NemicoHandleInput {
 
 	private Body body;
@@ -13,13 +18,15 @@ public class NemicoHandleInput {
 	private boolean enableSkill;
 	private Nemico nemico;
 	
+	/**
+	 * @param nemico	Nemico a cui voglio assegnare la gestione degli input
+	 */
 	public NemicoHandleInput(Nemico nemico) {
 		this.nemico = nemico;
 		this.body = nemico.b2body;
 		this.posX=0;
 		this.posY=0;
 		this.enableSkill=false;
-		//update();
 	}
 	
 
@@ -58,6 +65,12 @@ public class NemicoHandleInput {
 			return false;
 	}
 	
+	
+	/**
+	 * Applica l'impulso adatto grazie a posX e posY che indicano la direzione in cui deve essere applicato
+	 * @param posX	coordinata X contenuta nel pacchetto Packet02Move 
+	 * @param posY	coordinata Y contenuta nel pacchetto Packet02Move 
+	 */
 	public void update(int posX, int posY) {
 		setPos(posX, posY);
 		if(up()) {

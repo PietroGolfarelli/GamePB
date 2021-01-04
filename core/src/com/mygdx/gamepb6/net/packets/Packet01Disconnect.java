@@ -3,6 +3,11 @@ package com.mygdx.gamepb6.net.packets;
 import com.mygdx.gamepb6.net.GameClient;
 import com.mygdx.gamepb6.net.GameServer;
 
+/**
+* Packet01Disconnect viene utilizzato  per indicare ed effetture la disconnessione di un Client. 
+* Implementa tutti i metodi gia descritti nella classe astratta Packet.
+* @see Packet
+*/
 public class Packet01Disconnect extends Packet {
 
     private String username;

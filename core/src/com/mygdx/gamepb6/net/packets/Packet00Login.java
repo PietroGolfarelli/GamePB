@@ -4,6 +4,11 @@ package com.mygdx.gamepb6.net.packets;
 import com.mygdx.gamepb6.net.GameClient;
 import com.mygdx.gamepb6.net.GameServer;
 
+/**
+ * Packet00Login contiene tutti i dati che permettono la connessione di un giocatore. 
+ * Implementa tutti i metodi gia descritti nella classe astratta Packet.
+ * @see Packet
+ */
 public class Packet00Login extends Packet {
 
     private String username;
@@ -17,9 +22,6 @@ public class Packet00Login extends Packet {
         this.x = Float.parseFloat(dataArray[1]);
         this.y = Float.parseFloat(dataArray[2]);
     }
-
-   
-
 
 	public Packet00Login(String username, float f, float g) {
         super(00);

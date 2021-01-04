@@ -3,6 +3,12 @@ package com.mygdx.gamepb6.net.packets;
 import com.mygdx.gamepb6.net.GameClient;
 import com.mygdx.gamepb6.net.GameServer;
 
+/**
+ * 
+ * Questa classe astratta rappresenta lo scheletro dei Pacchetti che vengono utilizzati per la comunicazione tra
+ * GameClient e GameServer.
+ */
+
 public abstract class Packet {
 
     public static enum PacketTypes {
@@ -24,9 +30,17 @@ public abstract class Packet {
     public Packet(int packetId) {
         this.packetId = (byte) packetId;
     }
-
+    
+    /**
+     * Permette al client di inviare i dati del pacchetto.
+     * @param client	GameClient
+     */
     public abstract void writeData(GameClient client);
-
+    
+    /**
+     * permette al server di inviare i dari del pacchetto.
+     * @param server	GameServer
+     */
     public abstract void writeData(GameServer server);
 
     public String readData(byte[] data) {
@@ -35,7 +49,12 @@ public abstract class Packet {
     }
 
     public abstract byte[] getData();
-
+    
+    /**
+     * Permette di identificare il tipo di pacchetto dall'id passato per input
+     * @param packetId	tag per riconoscere il tipo di pacchetto
+     * @return			PacketTypes del pacchetto
+     */
     public static PacketTypes lookupPacket(String packetId) {
         try {
             return lookupPacket(Integer.parseInt(packetId));
@@ -43,7 +62,7 @@ public abstract class Packet {
             return PacketTypes.INVALID;
         }
     }
-
+    
     public static PacketTypes lookupPacket(int id) {
         for (PacketTypes p : PacketTypes.values()) {
             if (p.getId() == id) {
